@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, Dimensions, View, LogBox, ScrollView } from "react-native";
 import CalendarStrip from 'react-native-calendar-strip';
-import { CalendarList } from 'react-native-calendars';
+
 
 import { Ionicons } from '@expo/vector-icons';
 
 import Accordian from '../../components/Accordion';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+
 
 LogBox.ignoreAllLogs();
 
@@ -21,6 +22,7 @@ const markedDates = {
 
 const Shedule = () => {
   const [menu, setMenu] = useState([{
+    id: 1,
     title: 'Dr. Daniel Oliveira',
     data: [
       { key: '08:00 José Luiz Oliveira Barroso', value: false },
@@ -30,6 +32,7 @@ const Shedule = () => {
     ]
   },
   {
+    id: 2,
     title: 'Dra. Anna Sophia',
     data: [
       { key: '10:00 Adriano Byrne Azevedo', value: false },
@@ -39,6 +42,7 @@ const Shedule = () => {
     ]
   },
   {
+    id: 3,
     title: 'Dr. David',
     data: [
       { key: '13:00 Bruna Garcia da Silva', value: false },
@@ -46,6 +50,7 @@ const Shedule = () => {
     ]
   },
   {
+    id: 4,
     title: 'Dr. Wesley',
     data: [
       { key: 'Choco Lava Cake', value: false },
@@ -60,7 +65,7 @@ const Shedule = () => {
     let item;
     for (item of menu) {
       items.push(
-        <Accordian title={item.title} data={item.data} />
+        <Accordian title={item.title} data={item.data} key={item.id} />
       );
     }
     return items;
@@ -69,14 +74,6 @@ const Shedule = () => {
   return (
     <>
       <View style={styles.container}>
-        {/*     <CalendarList
-          calendarHeight={300}
-          horizontal={true}
-          pagingEnabled
-
-          markedDates={markedDates}
-        />
-*/}
         <CalendarStrip
           scrollable
           
@@ -86,7 +83,7 @@ const Shedule = () => {
           calendarHeaderStyle={{ color: 'white', }}
           dateNumberStyle={{ color: 'white' }}
           dateNameStyle={{ color: 'white' }}
-          iconContainer={{ flex: 0.1 }}
+          iconContainer={{ flex: 0.1  }}
         />
 
         <ScrollView style={{}}>

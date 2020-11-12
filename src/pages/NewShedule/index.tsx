@@ -5,6 +5,7 @@ import ActionSheet from 'react-native-actionsheet';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
 
+moment.locale('pt-br');
 
 
 const actionSheetOptions = ['Compareceu', 'Não compareceu', 'Cancelar'];
@@ -71,7 +72,7 @@ const NewShedule = ({ navigation }: any) => {
 
   const onChange = (event: any, selectedDate: any) => {
     const currentDate = selectedDate || date;
-    //setShow(Platform.OS === 'ios');
+    setShow(Platform.OS === 'ios');
     setDate(currentDate);
   };
 
@@ -111,7 +112,7 @@ const NewShedule = ({ navigation }: any) => {
         <View style={styles.row}>
           <Text style={styles.text}>Data</Text>
           <TouchableOpacity onPress={showDatepicker} >
-            <Text style={styles.text}>{moment.utc(date).format('DD/MM/YYYY')}</Text>
+            <Text style={styles.text}>{moment(date).format('DD/MM/YYYY')}</Text>
           </TouchableOpacity>
         </View>
 
@@ -120,7 +121,7 @@ const NewShedule = ({ navigation }: any) => {
         >
           <Text style={styles.text}>Hora</Text>
           <TouchableOpacity onPress={showTimepicker} >
-            <Text style={styles.text}>{moment.utc(date).format('hh:mm A')}</Text>
+            <Text style={styles.text}>{moment(date).format('hh:mm A')}</Text>
           </TouchableOpacity>
         </View>
 

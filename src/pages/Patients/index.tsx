@@ -1,7 +1,8 @@
-import React from 'react';
-import { Text, View, FlatList, StyleSheet, TextInput } from "react-native";
-import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
+import React, { useState } from 'react';
+import { Text, View, FlatList, StyleSheet, StatusBar, TextInput, Platform } from "react-native";
+import { StatusBar as ExpoStatusBar, } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const data = [
   'Pooja Mills',
@@ -115,53 +116,109 @@ const data = [
 
 interface ItemProps {
   item: string;
+  navigation: any;
 }
 
 const RenderPatients = (props: ItemProps) => {
-  const { item } = props;
+  const { item, navigation } = props;
   return (
-    <View style={styles.renderContainer}>
+    <TouchableOpacity style={styles.renderContainer} onPress={() => navigation.navigate('Patient')}>
       <Text style={styles.renderText}>{item}</Text>
-    </View>
+    </TouchableOpacity>
   );
 }
 
-const Patients = () => {
+const Patients = ({ navigation }: any) => {
+  const [search, setSearch] = useState('');
+  const [filteredDataSource, setFilteredDataSource] = useState(data);
+  const [masterDataSource, setMasterDataSource] = useState(data);
+
+  const searchFilterFunction = (text: string) => {
+    if (text) {
+      const newData = masterDataSource.filter(
+        function (item: any) {
+          const itemData = item
+            ? item.toUpperCase()
+            : ''.toUpperCase();
+          const textData = text.toUpperCase();
+          return itemData.indexOf(textData) > -1;
+        });
+      setFilteredDataSource(newData);
+      setSearch(text);
+    } else {
+      setFilteredDataSource(masterDataSource);
+      setSearch(text);
+    }
+  };
+
+  const clearFilter = () => {
+    setSearch('');
+
+    setFilteredDataSource(masterDataSource)
+  }
+
   return (
     <>
       <ExpoStatusBar style="dark" />
-      <View style={{ paddingTop: 20 }}>
+      <View style={styles.container}>
         <View style={styles.searchContainer}>
-          <Ionicons name="ios-search" size={20} color="#3C3C4399" />
-          {/**<Text style={styles.search}>Pesquisar pacientes</Text> */}
-          <TextInput placeholder="Pesquisar paciente" placeholderTextColor="#3C3C4399" style={{ fontSize: 18, marginLeft: 5 }} />
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Ionicons name="ios-search" size={20} color="#3C3C4399" style={{ paddingRight: 5 }} />
+            <TextInput
+              value={search}
+              onChangeText={(text) => searchFilterFunction(text)}
+              placeholder="Pesquisar paciente"
+              placeholderTextColor="#3C3C4399"
+              style={{ fontSize: 18, }}
+            />
+          </View>
+          {search ?
+            <TouchableOpacity onPress={clearFilter} style={{ padding: 5, alignItems: 'center'}}>
+              <Ionicons name="ios-close" size={32} color="#3C3C4399" />
+            </TouchableOpacity>
+            : undefined
+          }
         </View>
 
-        <FlatList data={data} renderItem={(props: any) => <RenderPatients {...props} />} />
+        <FlatList 
+          data={filteredDataSource}
+          renderItem={(props: any) => <RenderPatients {...props} navigation={navigation} />} 
+        />
       </View>
     </>
   )
 }
 
-
 const styles = StyleSheet.create({
+  container: {
+    paddingTop: Platform.OS === 'ios' ? 20 : StatusBar.currentHeight, flex: 1,
+  },
+
   renderContainer: {
-    padding: 10,
+    paddingVertical: 20,
+    marginHorizontal: 15,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderColor: '#aaa'
   },
 
   renderText: {
-
+    fontSize: 16,
   },
 
   searchContainer: {
     flexDirection: 'row',
     backgroundColor: '#7676801F',
     width: '95%',
-    padding: 12.5,
+    //padding: 12.5,
+    //paddingVertical: 10,
+    height: 40,
+    paddingHorizontal: 12.5,
     borderRadius: 15,
     alignSelf: 'center',
     alignItems: 'center',
-    marginBottom: 10,
+    justifyContent: 'space-between',
+    marginVertical: 10,
+
   },
 
   search: {

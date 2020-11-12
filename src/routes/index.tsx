@@ -1,12 +1,12 @@
 import React from 'react';
-//import {View, Text} from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { StatusBar as ExpoStatusBar } from 'expo-status-bar'
 import { createStackNavigator } from '@react-navigation/stack';
 
 import BottomTabs from './bottomTabs.routes';
+
 import NewShedule from '../pages/NewShedule';
-import { StyleSheet } from 'react-native';
+import Patient    from '../pages/Patient';
 
 const Stack = createStackNavigator();
 
@@ -16,12 +16,13 @@ const Routes = () => {
       <ExpoStatusBar style="dark" />
       <NavigationContainer>
         <Stack.Navigator>
-          <Stack.Screen name="BottomTabs" component={BottomTabs} options={{
-            headerShown: false,
-          }} />
-          <Stack.Screen name="NewShedule" component={NewShedule} options={{
-            //headerShown: false,
-          }} />
+          <Stack.Screen name="BottomTabs" component={BottomTabs} 
+            options={{
+              headerShown: false,
+            }} 
+          />
+          <Stack.Screen name="NewShedule" component={NewShedule} />
+          <Stack.Screen name="Patient"    component={Patient} />
         </Stack.Navigator>
 
       </NavigationContainer>

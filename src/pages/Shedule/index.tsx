@@ -4,10 +4,7 @@ import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
 import CalendarStrip, { TDaySelectionAnimation } from 'react-native-calendar-strip';
 import { Ionicons } from '@expo/vector-icons';
 
-import moment from 'moment'
-
 import Accordian from '../../components/Accordion';
-
 
 LogBox.ignoreAllLogs();
 
@@ -45,7 +42,7 @@ const markedDates = [
   },
 ];
 
-const Shedule = () => {
+const Shedule = ({ navigation }: any) => {
   const [menu, setMenu] = useState([{
     id: 1,
     title: 'Dr. Daniel Oliveira',

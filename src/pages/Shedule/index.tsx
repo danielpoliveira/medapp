@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, ScrollView, TouchableOpacity, Platform, StatusBar } from "react-native";
-import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
 import CalendarStrip from 'react-native-calendar-strip';
 import { Ionicons } from '@expo/vector-icons';
 
 import Accordian from '../../components/Accordion';
+import { useFocusEffect } from '@react-navigation/native';
+import { useStatusBarMode } from '../../contexts/statusBarMode';
 
 const daySelectionAnimation = {
   type: 'background',
-  duration: 300,
-  highlightColor: '#FFF'
+  duration: 350,
+  highlightColor: '#FFFFFFCC'
 } as TDaySelectionAnimation;
 
 const Shedule = ({ navigation }: any) => {
+  const { mode: _statusBarMode, changeStatusBarMode, background, changeStatusBarBackground } = useStatusBarMode();
   const [menu, setMenu] = useState([{
     id: 1,
     title: 'Dr. Daniel Oliveira',
@@ -52,6 +54,13 @@ const Shedule = ({ navigation }: any) => {
     ]
   }]);
 
+  useFocusEffect(
+    React.useCallback(() => {
+      changeStatusBarMode('light');
+      changeStatusBarBackground('#3343CE');
+    }, [])
+  );
+
   const renderAccordians = () => {
     const items = [];
     let item;
@@ -68,16 +77,13 @@ const Shedule = ({ navigation }: any) => {
   }
 
   return (
-    <>
-      <View style={{ backgroundColor: '#3343CE', paddingTop: Platform.OS === 'ios' ? 20 : StatusBar.currentHeight }}>
-        <ExpoStatusBar style="light" />
-      </View>
+    <React.Fragment>
       <View style={styles.container}>
         <CalendarStrip
+          daySelectionAnimation={daySelectionAnimation}
           leftSelector={[]}
           rightSelector={[]}
-          onDateSelected={() => {}}
-          daySelectionAnimation={daySelectionAnimation}
+          onDateSelected={() => { }}
           useNativeDriver={true}
           scrollable
           highlightDateNameStyle={{ color: '#000' }}
@@ -100,13 +106,12 @@ const Shedule = ({ navigation }: any) => {
           <Ionicons name="ios-add" size={30} color="#FFFFFF" />
         </TouchableOpacity>
       </View>
-    </>
+    </React.Fragment>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
-    //paddingTop: 20,
     flex: 1,
   },
 

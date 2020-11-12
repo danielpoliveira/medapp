@@ -1,23 +1,17 @@
 import React from 'react';
-import { View, StyleSheet, LogBox } from 'react-native';
+import { LogBox } from 'react-native';
 import Routes from './routes';
+
+import { StatusBarModeProvider } from './contexts/statusBarMode';
 
 LogBox.ignoreAllLogs();
 
 const App = () => {
   return (
-    <View style={styles.container}>
+    <StatusBarModeProvider>
       <Routes />
-    </View>
+    </StatusBarModeProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    //justifyContent: 'center',
-    //alignItems: 'center',
-  }
-})
 
 export default App;

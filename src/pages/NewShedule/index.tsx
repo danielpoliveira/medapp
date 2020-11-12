@@ -1,27 +1,29 @@
-import React, { 
-  useRef, 
-  useState, 
+import React, {
+  useRef,
+  useState,
   useLayoutEffect,
 } from 'react';
 
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  TouchableOpacity, 
-  Platform, 
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Platform,
   Modal,
   ScrollView,
 } from 'react-native';
 
+import { useFocusEffect } from '@react-navigation/native';
 import { HeaderBackButton } from '@react-navigation/stack';
-import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 
 import moment from 'moment';
 
 import ActionSheet from 'react-native-actionsheet';
 import DateTimePicker from '@react-native-community/datetimepicker';
+
+import { useStatusBarMode } from '../../contexts/statusBarMode';
 
 const actionSheetOptions = ['Compareceu', 'Não compareceu', 'Cancelar'];
 
@@ -33,12 +35,21 @@ const NewShedule = ({ navigation }: any) => {
   const [show, setShow] = useState(false);
   const [selectActionSheet, setSelectActionSheet] = useState<number>('' as any);
 
+  const { changeStatusBarMode, changeStatusBarBackground } = useStatusBarMode();
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: (props: any) => <HeaderBackButton {...props} label="Início" />,
       headerRight: () => <HeaderRightButtom />,
     });
   }, [navigation]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      changeStatusBarMode('dark');
+      changeStatusBarBackground('#FFFFFF');
+    }, [])
+  );
 
   const HeaderRightButtom = () => (
     <TouchableOpacity onPress={() => { }} style={styles.saveContainer}>
@@ -66,7 +77,7 @@ const NewShedule = ({ navigation }: any) => {
   };
 
   const handleActionSheetPress = (buttonIndex: number) => {
-    if (buttonIndex < actionSheetOptions.length-1)
+    if (buttonIndex < actionSheetOptions.length - 1)
       setSelectActionSheet(buttonIndex);
   }
 
@@ -76,9 +87,7 @@ const NewShedule = ({ navigation }: any) => {
   }
 
   return (
-    <>
-      <ExpoStatusBar style="dark" />
-
+    <React.Fragment>
       {show &&
         (Platform.OS === 'ios' ?
           (<Modal visible={true} transparent animationType={'fade'}>
@@ -108,7 +117,7 @@ const NewShedule = ({ navigation }: any) => {
             testID="dateTimePicker"
             value={date}
             mode={mode}
-          //  is24Hour={true}
+            //  is24Hour={true}
             display="default"
             onChange={onChange}
           />)
@@ -202,7 +211,7 @@ const NewShedule = ({ navigation }: any) => {
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </>
+    </React.Fragment>
   );
 }
 

@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { Text, View, FlatList, StyleSheet, StatusBar, TextInput, Platform } from "react-native";
-import { StatusBar as ExpoStatusBar, } from 'expo-status-bar';
+import { Text, View, FlatList, StyleSheet, TextInput, } from "react-native";
 import { Ionicons } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { useFocusEffect } from '@react-navigation/native';
+
+import { useStatusBarMode } from '../../contexts/statusBarMode';
 
 const data = [
   'Pooja Mills',
@@ -128,6 +130,15 @@ const Patients = ({ navigation }: any) => {
   const [filteredDataSource, setFilteredDataSource] = useState(data);
   const [masterDataSource, setMasterDataSource] = useState(data);
 
+  const {changeStatusBarMode, changeStatusBarBackground, } = useStatusBarMode();
+
+  useFocusEffect(
+    React.useCallback(() => {
+      changeStatusBarMode('dark');
+      changeStatusBarBackground('#FFFFFF');
+    }, [])
+  );
+  
   const searchFilterFunction = (text: string) => {
     if (text) {
       const newData = masterDataSource.filter(
@@ -154,7 +165,6 @@ const Patients = ({ navigation }: any) => {
 
   return (
     <>
-      <ExpoStatusBar style="dark" />
       <View style={styles.container}>
         <View style={styles.searchContainer}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -186,7 +196,7 @@ const Patients = ({ navigation }: any) => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop: Platform.OS === 'ios' ? 20 : StatusBar.currentHeight, flex: 1,
+  //  paddingTop: Platform.OS === 'ios' ? 20 : StatusBar.currentHeight, flex: 1,
   },
 
   renderContainer: {

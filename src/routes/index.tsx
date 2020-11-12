@@ -1,13 +1,13 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { StatusBar as ExpoStatusBar } from 'expo-status-bar'
 import { createStackNavigator } from '@react-navigation/stack';
 
 import BottomTabs from './bottomTabs.routes';
 
 import NewShedule from '../pages/NewShedule';
-import Patient    from '../pages/Patient';
+import Patient from '../pages/Patient';
 
+import CustomStatusBar from '../components/CustomStatusBar';
 
 const Stack = createStackNavigator();
 
@@ -18,8 +18,7 @@ const screenOptions: any = {
 const Routes = () => {
   return (
     <>
-      <ExpoStatusBar style="dark" />
-
+      <CustomStatusBar />
       <NavigationContainer >
         <Stack.Navigator screenOptions={screenOptions}>
           <Stack.Screen

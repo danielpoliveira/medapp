@@ -2,6 +2,8 @@ import React, { useLayoutEffect } from 'react';
 import { Text, View, StyleSheet, Image, FlatList, ScrollView, TouchableOpacity, ImageProps } from "react-native";
 import { HeaderBackButton } from '@react-navigation/stack';
 import { AntDesign } from '@expo/vector-icons';
+import { useStatusBarMode } from '../../contexts/statusBarMode';
+import { useFocusEffect } from '@react-navigation/native';
 
 const infoData = [{
   id: 1,
@@ -17,12 +19,21 @@ const infoData = [{
 }];
 
 const Patient = ({ navigation }: any) => {
+  const { changeStatusBarMode, changeStatusBarBackground, } = useStatusBarMode();
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: (props: any) => <HeaderBackButton {...props} label="Início" />,
       headerRight: () => <HeaderRightButtom />,
     });
   }, [navigation]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      changeStatusBarMode('dark');
+      changeStatusBarBackground('#FFFFFF');
+    }, [])
+  );
 
   const HeaderRightButtom = () => (
     <TouchableOpacity onPress={() => { }} style={styles.printContainer}>

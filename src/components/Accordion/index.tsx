@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   title: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: 'bold',
     color: Colors.DARKGRAY,
   },
@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     color: Colors.GREEN,
   },
   itemInActive: {
-    fontSize: 12,
+    fontSize: 15,
     color: Colors.DARKGRAY,
   },
   btnActive: {

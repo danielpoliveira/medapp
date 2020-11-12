@@ -1,26 +1,51 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, Dimensions, View, LogBox, ScrollView } from "react-native";
-import CalendarStrip from 'react-native-calendar-strip';
-import { CalendarList } from 'react-native-calendars';
-
+import { StyleSheet, Text, Dimensions, View, LogBox, ScrollView, TouchableOpacity, Platform, StatusBar } from "react-native";
+import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
+import CalendarStrip, { TDaySelectionAnimation } from 'react-native-calendar-strip';
 import { Ionicons } from '@expo/vector-icons';
 
+import moment from 'moment'
+
 import Accordian from '../../components/Accordion';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 
 LogBox.ignoreAllLogs();
 
-const { width, height } = Dimensions.get('window');
-
-const markedDates = {
+/*const markedDates = {
   '2020-11-16': { selected: true, marked: true, selectedColor: 'blue' },
   '2020-11-17': { marked: true },
   '2020-11-18': { marked: true, dotColor: 'red', activeOpacity: 0 },
   '2020-11-19': { disabled: true, disableTouchEvent: true }
-};
+};*/
 
-const Shedule = () => {
-  const [menu, setMenu] = useState([{
+const daySelectionAnimation = {
+  type: 'background',
+  duration: 300,
+  highlightColor: '#FFF'
+} as TDaySelectionAnimation;
+
+const markedDates = [
+  {
+    date: '2020-11-22',
+    dots: [
+      {
+        color: 'red',
+        selectedColor: 'pink',
+      },
+    ],
+  },
+  {
+    date: '2020-11-23',
+    lines: [
+      {
+        color: 'orange',
+        selectedColor: 'gray',
+      },
+    ],
+  },
+];
+
+const Shedule = ({ navigation }: any) => {
+  const [menu] = useState([{
     title: 'Dr. Daniel Oliveira',
     data: [
       { key: '08:00 José Luiz Oliveira Barroso', value: false },
@@ -66,27 +91,40 @@ const Shedule = () => {
     return items;
   }
 
+  const handleAddPressed = () => {
+    navigation.navigate('NewShedule');
+  }
+
+
+
+
   return (
     <>
+      <View style={{ backgroundColor: '#3343CE', paddingTop: Platform.OS === 'ios' ? 20 : StatusBar.currentHeight }}>
+        <ExpoStatusBar style="light" />
+      </View>
       <View style={styles.container}>
-        {/*     <CalendarList
-          calendarHeight={300}
-          horizontal={true}
-          pagingEnabled
-
-          markedDates={markedDates}
-        />
-*/}
         <CalendarStrip
+          //iconLeft={() => {}}
+          //iconRight={() => {}}
+          //iconLeftStyle={{color: '#FFF'}}
+          leftSelector={[]}
+          rightSelector={[]}
+          onDateSelected={() => { }}
+          daySelectionAnimation={daySelectionAnimation}
+
+          useNativeDriver={true}
           scrollable
-          
-          style={{ height: 100, paddingTop: 20, paddingBottom: 10,
-          }}
+          highlightDateNameStyle={{ color: '#000' }}
+          highlightDateNumberStyle={{ color: '#000' }}
+
+          style={{ height: 100, paddingTop: 20, paddingBottom: 10 }}
           calendarColor={'#3343CE'}
           calendarHeaderStyle={{ color: 'white', }}
           dateNumberStyle={{ color: 'white' }}
           dateNameStyle={{ color: 'white' }}
           iconContainer={{ flex: 0.1 }}
+
         />
 
         <ScrollView style={{}}>
@@ -95,23 +133,7 @@ const Shedule = () => {
 
       </View>
       <View style={{ position: 'absolute', bottom: 20, right: 20, zIndex: 5 }}>
-        <TouchableOpacity style={{
-          backgroundColor: 'blue',
-          width: 60,
-          height: 60,
-          justifyContent: 'center',
-          alignItems: 'center',
-          borderRadius: 30,
-          shadowColor: "#000",
-          shadowOffset: {
-            width: 0,
-            height: 3,
-          },
-          shadowOpacity: 0.36,
-          shadowRadius: 6.68,
-
-          elevation: 5,
-        }}>
+        <TouchableOpacity style={styles.addShedule} onPress={handleAddPressed} >
           <Ionicons name="ios-add" size={30} color="#FFFFFF" />
         </TouchableOpacity>
       </View>
@@ -121,8 +143,26 @@ const Shedule = () => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop: 20,
+    //paddingTop: 20,
     flex: 1,
+  },
+
+  addShedule: {
+    backgroundColor: 'blue',
+    width: 60,
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 30,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.36,
+    shadowRadius: 6.68,
+
+    elevation: 5,
   }
 })
 

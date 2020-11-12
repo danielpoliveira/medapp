@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, View, FlatList, StyleSheet, TextInput } from "react-native";
-
+import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 
 const data = [
@@ -128,15 +128,18 @@ const RenderPatients = (props: ItemProps) => {
 
 const Patients = () => {
   return (
-    <View style={{ paddingTop: 20 }}>
-      <View style={styles.searchContainer}>
-        <Ionicons name="ios-search" size={22.5} color="#3C3C4399"/>
-        {/**<Text style={styles.search}>Pesquisar pacientes</Text> */}
-        <TextInput placeholder="Pesquisar paciente" placeholderTextColor="#3C3C4399" style={{fontSize: 18, marginLeft: 5}}/>
-      </View>
+    <>
+      <ExpoStatusBar style="dark" />
+      <View style={{ paddingTop: 20 }}>
+        <View style={styles.searchContainer}>
+          <Ionicons name="ios-search" size={20} color="#3C3C4399" />
+          {/**<Text style={styles.search}>Pesquisar pacientes</Text> */}
+          <TextInput placeholder="Pesquisar paciente" placeholderTextColor="#3C3C4399" style={{ fontSize: 18, marginLeft: 5 }} />
+        </View>
 
-      <FlatList data={data} renderItem={(props: any) => <RenderPatients {...props} />} />
-    </View>
+        <FlatList data={data} renderItem={(props: any) => <RenderPatients {...props} />} />
+      </View>
+    </>
   )
 }
 

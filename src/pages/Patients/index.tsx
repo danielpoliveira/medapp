@@ -114,11 +114,6 @@ const data = [
   'Shamas Alvarez',
 ];
 
-interface ItemProps {
-  item: string;
-  navigation: any;
-}
-
 const RenderPatients = (props: ItemProps) => {
   const { item, navigation } = props;
   return (

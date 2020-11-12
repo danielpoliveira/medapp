@@ -1,46 +1,16 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, Dimensions, View, LogBox, ScrollView, TouchableOpacity, Platform, StatusBar } from "react-native";
+import { StyleSheet, View, ScrollView, TouchableOpacity, Platform, StatusBar } from "react-native";
 import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
-import CalendarStrip, { TDaySelectionAnimation } from 'react-native-calendar-strip';
+import CalendarStrip from 'react-native-calendar-strip';
 import { Ionicons } from '@expo/vector-icons';
 
 import Accordian from '../../components/Accordion';
-
-LogBox.ignoreAllLogs();
-
-/*const markedDates = {
-  '2020-11-16': { selected: true, marked: true, selectedColor: 'blue' },
-  '2020-11-17': { marked: true },
-  '2020-11-18': { marked: true, dotColor: 'red', activeOpacity: 0 },
-  '2020-11-19': { disabled: true, disableTouchEvent: true }
-};*/
 
 const daySelectionAnimation = {
   type: 'background',
   duration: 300,
   highlightColor: '#FFF'
 } as TDaySelectionAnimation;
-
-const markedDates = [
-  {
-    date: '2020-11-22',
-    dots: [
-      {
-        color: 'red',
-        selectedColor: 'pink',
-      },
-    ],
-  },
-  {
-    date: '2020-11-23',
-    lines: [
-      {
-        color: 'orange',
-        selectedColor: 'gray',
-      },
-    ],
-  },
-];
 
 const Shedule = ({ navigation }: any) => {
   const [menu, setMenu] = useState([{
@@ -97,9 +67,6 @@ const Shedule = ({ navigation }: any) => {
     navigation.navigate('NewShedule');
   }
 
-
-
-
   return (
     <>
       <View style={{ backgroundColor: '#3343CE', paddingTop: Platform.OS === 'ios' ? 20 : StatusBar.currentHeight }}>
@@ -107,26 +74,20 @@ const Shedule = ({ navigation }: any) => {
       </View>
       <View style={styles.container}>
         <CalendarStrip
-          //iconLeft={() => {}}
-          //iconRight={() => {}}
-          //iconLeftStyle={{color: '#FFF'}}
           leftSelector={[]}
           rightSelector={[]}
-          onDateSelected={() => { }}
+          onDateSelected={() => {}}
           daySelectionAnimation={daySelectionAnimation}
-
           useNativeDriver={true}
           scrollable
           highlightDateNameStyle={{ color: '#000' }}
           highlightDateNumberStyle={{ color: '#000' }}
-
-          style={{ height: 100, paddingTop: 20, paddingBottom: 10 }}
+          style={{ height: 130, paddingTop: 20, paddingBottom: 10 }}
           calendarColor={'#3343CE'}
           calendarHeaderStyle={{ color: 'white', }}
           dateNumberStyle={{ color: 'white' }}
           dateNameStyle={{ color: 'white' }}
-          iconContainer={{ flex: 0.1 }}
-
+          iconContainer={{ flex: 0.035 }}
         />
 
         <ScrollView style={{}}>

@@ -1,6 +1,8 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, LogBox } from 'react-native';
 import Routes from './routes';
+
+LogBox.ignoreAllLogs();
 
 const App = () => {
   return (

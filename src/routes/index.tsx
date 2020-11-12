@@ -29,6 +29,7 @@ const Routes = () => {
           />
           <Stack.Screen
             name="NewShedule"
+            options={{ headerTitle: 'Novo Agendamento' }}
             component={NewShedule}
           />
           <Stack.Screen

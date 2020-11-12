@@ -1,12 +1,10 @@
 import React, { useRef, useState, useLayoutEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Platform, Switch, TouchableOpacityBase, Modal } from 'react-native';
-import { StatusBar as ExpoStatusBar } from 'expo-status-bar'
+import { View, Text, StyleSheet, TouchableOpacity, Platform, Modal, TouchableOpacityBase } from 'react-native';
+import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
+import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import ActionSheet from 'react-native-actionsheet';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
-
-moment.locale('pt-br');
-
 
 const actionSheetOptions = ['Compareceu', 'Não compareceu', 'Cancelar'];
 
@@ -104,57 +102,81 @@ const NewShedule = ({ navigation }: any) => {
     <>
       <ExpoStatusBar style="dark" />
 
-      {show && 
+      {show &&
         <DateTimePickerComponent date={date} mode={mode} onChange={onChange} />
       }
-      
+
       <View style={styles.container}>
-        <View style={styles.row}>
-          <Text style={styles.text}>Data</Text>
-          <TouchableOpacity onPress={showDatepicker} >
+
+        <TouchableOpacity onPress={showDatepicker} style={styles.row}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Ionicons name='ios-calendar' size={20} style={{ marginRight: 10, width: 20, }} />
+            <Text style={styles.text}>Data</Text>
+          </View>
+
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Text style={styles.text}>{moment(date).format('DD/MM/YYYY')}</Text>
-          </TouchableOpacity>
-        </View>
+            <Ionicons name='ios-arrow-forward' size={20} style={{ marginLeft: 10 }} />
+          </View>
 
-        <View
-          style={styles.row}
-        >
-          <Text style={styles.text}>Hora</Text>
-          <TouchableOpacity onPress={showTimepicker} >
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={showTimepicker} style={styles.row}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Ionicons name='ios-timer' size={20} style={{ marginRight: 10, width: 20, }} />
+            <Text style={styles.text}>Hora</Text>
+          </View>
+
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Text style={styles.text}>{moment(date).format('hh:mm A')}</Text>
-          </TouchableOpacity>
-        </View>
+            <Ionicons name='ios-arrow-forward' size={20} style={{ marginLeft: 10 }} />
+          </View>
+        </TouchableOpacity>
 
-        <View
-          style={styles.row}
-        >
-          <Text style={styles.text}>Paciente</Text>
-          <Text style={styles.text}>Maria Luiza Mendes</Text>
-        </View>
+        <TouchableOpacity style={styles.row}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Ionicons name='ios-medkit' size={20} style={{ marginRight: 10, width: 20, }} />
+            <Text style={styles.text}>Paciente</Text>
+          </View>
 
-        <View
-          style={styles.row}
-        >
-          <Text style={styles.text}>Telefone</Text>
-          <Text style={styles.text}>(21) 1234-5678</Text>
-        </View>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={styles.text}>Maria Luiza</Text>
+            <Ionicons name='ios-arrow-forward' size={20} style={{ marginLeft: 10 }} />
+          </View>
+        </TouchableOpacity>
 
-        <View
-          style={styles.row}
-        >
-          <Text style={styles.text}>Celular</Text>
-          <Text style={styles.text}>(21) 1234-5678</Text>
-        </View>
+        <TouchableOpacity style={styles.row}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Ionicons name='ios-call' size={20} style={{ marginRight: 10, width: 20, }} />
+            <Text style={styles.text}>Telefone</Text>
+          </View>
+
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={styles.text}>(21) 1234-5678</Text>
+            <Ionicons name='ios-arrow-forward' size={20} style={{ marginLeft: 10 }} />
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.row}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Ionicons name='ios-phone-portrait' size={20} style={{ marginRight: 10, width: 20, }} />
+            <Text style={styles.text}>Celular</Text>
+          </View>
+
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={styles.text}>(21) 1234-5678</Text>
+            <Ionicons name='ios-arrow-forward' size={20} style={{ marginLeft: 10 }} />
+          </View>
+        </TouchableOpacity>
 
 
-        <View
-          style={styles.row}
-        >
+        <TouchableOpacity onPress={showActionSheet} style={styles.row}>
           <Text style={styles.text}>Status</Text>
           <View>
-            <TouchableOpacity onPress={showActionSheet}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Text style={{ fontSize: 17 }}>{actionSheetOptions[selectActionSheet] ?? 'Selecione'}</Text>
-            </TouchableOpacity>
+              <Ionicons name='ios-arrow-forward' size={20} style={{ marginLeft: 10 }} />
+            </View>
             <ActionSheet
               ref={refActionSheet}
               title={'Selecione o status do agendamento'}
@@ -166,7 +188,7 @@ const NewShedule = ({ navigation }: any) => {
             />
           </View>
 
-        </View>
+        </TouchableOpacity>
 
         <View style={styles.row}>
           <Text style={[styles.text, { color: '#F20000' }]}>Apagar agendamento</Text>

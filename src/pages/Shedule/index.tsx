@@ -1,113 +1,218 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, ScrollView, TouchableOpacity, Platform, StatusBar } from "react-native";
-import CalendarStrip from 'react-native-calendar-strip';
-import { Ionicons } from '@expo/vector-icons';
+import React, {
+  useRef,
+  useState,
+  useLayoutEffect,
+} from 'react';
 
-import Accordian from '../../components/Accordion';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Platform,
+  Modal,
+  ScrollView,
+} from 'react-native';
+
 import { useFocusEffect } from '@react-navigation/native';
+import { HeaderBackButton } from '@react-navigation/stack';
+import { Ionicons, Fontisto } from '@expo/vector-icons';
+
+import moment from 'moment';
+
+import ActionSheet from 'react-native-actionsheet';
+import DateTimePicker from '@react-native-community/datetimepicker';
+
 import { useStatusBarMode } from '../../contexts/statusBarMode';
 
-const daySelectionAnimation = {
-  type: 'background',
-  duration: 350,
-  highlightColor: '#FFFFFFCC'
-} as TDaySelectionAnimation;
+const actionSheetOptions = ['Compareceu', 'Não compareceu', 'Cancelar'];
 
-const Shedule = ({ navigation }: any) => {
-  const { mode: _statusBarMode, changeStatusBarMode, background, changeStatusBarBackground } = useStatusBarMode();
-  const [menu, setMenu] = useState([{
-    id: 1,
-    title: 'Dr. Daniel Oliveira',
-    data: [
-      { key: '08:00 José Luiz Oliveira Barroso', value: false },
-      { key: '08:30 Roberto Pereira dos Santos', value: false },
-      { key: '09:00 Luiz Miranda Resende', value: false },
-      { key: '09:30 Mariana Silveira dos Anjos', value: false },
-    ]
-  },
-  {
-    id: 2,
-    title: 'Dra. Anna Sophia',
-    data: [
-      { key: '10:00 Adriano Byrne Azevedo', value: false },
-      { key: '10:30 Maria Luiza Mendes', value: false },
-      { key: '11:00 Pamela Amorin Gouveia', value: false },
-      { key: '11:30 -- intervalo --', value: false }
-    ]
-  },
-  {
-    id: 3,
-    title: 'Dr. David',
-    data: [
-      { key: '13:00 Bruna Garcia da Silva', value: false },
-      { key: '13:30 Alexandre Moura Filho', value: false },
-    ]
-  },
-  {
-    id: 4,
-    title: 'Dr. Wesley',
-    data: [
-      { key: 'Choco Lava Cake', value: false },
-      { key: 'Gulabjamun', value: false },
-      { key: 'Kalajamun', value: false },
-      { key: 'Jalebi', value: false }
-    ]
-  }]);
+const NewShedule = ({ navigation }: any) => {
+  const refActionSheet = useRef(null) as any;
+
+  const [date, setDate] = useState(new Date(Date.now()));
+  const [mode, setMode] = useState<IOSMode>('date');
+  const [show, setShow] = useState(false);
+  const [selectActionSheet, setSelectActionSheet] = useState<number>('' as any);
+
+  const { changeStatusBarMode, changeStatusBarBackground } = useStatusBarMode();
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerLeft: (props: any) => <HeaderBackButton {...props} label="Início" />,
+      headerRight: () => <HeaderRightButtom />,
+    });
+  }, [navigation]);
 
   useFocusEffect(
     React.useCallback(() => {
-      changeStatusBarMode('light');
-      changeStatusBarBackground('#3343CE');
+      changeStatusBarMode('dark');
+      changeStatusBarBackground('#FFFFFF');
     }, [])
   );
 
-  const renderAccordians = () => {
-    const items = [];
-    let item;
-    for (item of menu) {
-      items.push(
-        <Accordian title={item.title} data={item.data} key={item.id} />
-      );
-    }
-    return items;
+  const HeaderRightButtom = () => (
+    <TouchableOpacity onPress={() => { }} style={styles.saveContainer}>
+      <Text style={styles.saveText}>Save</Text>
+    </TouchableOpacity>
+  );
+
+  const onChange = (event: any, selectedDate: any) => {
+    const currentDate = selectedDate || date;
+    setShow(Platform.OS === 'ios');
+    setDate(currentDate);
+  };
+
+  const showMode = (currentMode: any) => {
+    setShow(true);
+    setMode(currentMode);
+  };
+
+  const showDatepicker = () => {
+    showMode('date');
+  };
+
+  const showTimepicker = () => {
+    showMode('time');
+  };
+
+  const handleActionSheetPress = (buttonIndex: number) => {
+    if (buttonIndex < actionSheetOptions.length - 1)
+      setSelectActionSheet(buttonIndex);
   }
 
-  const handleAddPressed = () => {
-    navigation.navigate('NewShedule');
+  const showActionSheet = () => {
+    if (refActionSheet.current)
+      refActionSheet.current.show();
   }
 
   return (
     <React.Fragment>
-      <View style={styles.container}>
-        <CalendarStrip
-          daySelectionAnimation={daySelectionAnimation}
-          leftSelector={[]}
-          rightSelector={[]}
-          onDateSelected={() => { }}
-          useNativeDriver={true}
-          scrollable
-          highlightDateNameStyle={{ color: '#000' }}
-          highlightDateNumberStyle={{ color: '#000' }}
-          style={{ height: 130, paddingTop: 20, paddingBottom: 10 }}
-          calendarColor={'#3343CE'}
-          calendarHeaderStyle={{ color: 'white', }}
-          dateNumberStyle={{ color: 'white' }}
-          dateNameStyle={{ color: 'white' }}
-          iconContainer={{ flex: 0.035 }}
-        />
+      {show &&
+        (Platform.OS === 'ios' ?
+          (<Modal visible={true} transparent animationType={'fade'}>
+            <View style={{ flex: 1, backgroundColor: '#00000050', alignItems: 'center', justifyContent: 'center' }}>
+              <View style={{ borderRadius: 12.5, width: '90%', backgroundColor: '#FFF', overflow: 'hidden' }}>
+                <View style={styles.datetimePickerOptions}>
+                  <TouchableOpacity onPress={() => setShow(false)}>
+                    <Text style={{ fontSize: 19, color: '#f20000' }}>Cancel</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => setShow(false)}>
+                    <Text style={{ fontSize: 19, color: 'blue' }}>Ok</Text>
+                  </TouchableOpacity>
+                </View>
+                <DateTimePicker
+                  testID="dateTimePicker"
+                  value={date}
+                  mode={mode}
+                  //is24Hour={true}
+                  display="default"
+                  onChange={onChange}
+                />
+              </View>
+            </View>
+          </Modal>)
+          :
+          (<DateTimePicker
+            testID="dateTimePicker"
+            value={date}
+            mode={mode}
+            //  is24Hour={true}
+            display="default"
+            onChange={onChange}
+          />)
+        )
+      }
 
-        <ScrollView style={{}}>
-          {renderAccordians()}
-        </ScrollView>
+      <ScrollView>
+        <View style={styles.container}>
+          <TouchableOpacity onPress={showDatepicker} style={styles.row}>
+            <View style={styles.column}>
+              <Ionicons name='ios-calendar' size={20} style={styles.leftIcon} />
+              <Text style={styles.text}>Data</Text>
+            </View>
 
-      </View>
-      <View style={{ position: 'absolute', bottom: 20, right: 20, zIndex: 5 }}>
-        <TouchableOpacity style={styles.addShedule} onPress={handleAddPressed} >
-          <Ionicons name="ios-add" size={30} color="#FFFFFF" />
-        </TouchableOpacity>
-      </View>
+            <View style={styles.column}>
+              <Text style={styles.text}>{moment(date).format('DD/MM/YYYY')}</Text>
+              <Ionicons name='ios-arrow-forward' size={20} style={styles.rightIcon} />
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={showTimepicker} style={styles.row}>
+            <View style={styles.column}>
+              <Ionicons name='ios-timer' size={20} style={styles.leftIcon} />
+              <Text style={styles.text}>Hora</Text>
+            </View>
+
+            <View style={styles.column}>
+              <Text style={styles.text}>{moment(date).format('hh:mm A')}</Text>
+              <Ionicons name='ios-arrow-forward' size={20} style={styles.rightIcon} />
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.row}>
+            <View style={styles.column}>
+              <Fontisto name='heartbeat-alt' size={20} style={styles.leftIcon} />
+              <Text style={styles.text}>Paciente</Text>
+            </View>
+
+            <View style={styles.column}>
+              <Text style={styles.text}>Maria Luiza</Text>
+              <Ionicons name='ios-arrow-forward' size={20} style={styles.rightIcon} />
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.row}>
+            <View style={styles.column}>
+              <Ionicons name='ios-call' size={20} style={styles.leftIcon} />
+              <Text style={styles.text}>Telefone</Text>
+            </View>
+
+            <View style={styles.column}>
+              <Text style={styles.text}>(21) 1234-5678</Text>
+              <Ionicons name='ios-arrow-forward' size={20} style={styles.rightIcon} />
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.row}>
+            <View style={styles.column}>
+              <Ionicons name='ios-phone-portrait' size={20} style={styles.leftIcon} />
+              <Text style={styles.text}>Celular</Text>
+            </View>
+
+            <View style={styles.column}>
+              <Text style={styles.text}>(21) 1234-5678</Text>
+              <Ionicons name='ios-arrow-forward' size={20} style={styles.rightIcon} />
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={showActionSheet} style={styles.row}>
+            <Text style={styles.text}>Status</Text>
+            <View>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={{ fontSize: 17 }}>{actionSheetOptions[selectActionSheet] ?? 'Selecione'}</Text>
+                <Ionicons name='ios-arrow-forward' size={20} style={styles.rightIcon} />
+              </View>
+              <ActionSheet
+                ref={refActionSheet}
+                title={'Selecione o status do agendamento'}
+                options={actionSheetOptions}
+                cancelButtonIndex={2}
+                destructiveButtonIndex={2}
+                tintColor={'#555'}
+                onPress={handleActionSheetPress}
+              />
+            </View>
+
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.row}>
+            <Text style={[styles.text, { color: '#F20000' }]}>Apagar agendamento</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
     </React.Fragment>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -115,23 +220,53 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
-  addShedule: {
-    backgroundColor: 'blue',
-    width: 60,
-    height: 60,
-    justifyContent: 'center',
+  datetimePickerOptions: {
+    flexDirection: 'row',
+    backgroundColor: '#eaeaea',
+    borderBottomWidth: StyleSheet.hairlineWidth,
     alignItems: 'center',
-    borderRadius: 30,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowOpacity: 0.36,
-    shadowRadius: 6.68,
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 12.5,
+  },
 
-    elevation: 5,
-  }
-})
+  saveContainer: {
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+  },
 
-export default Shedule;
+  saveText: {
+    fontSize: 18,
+    textTransform: 'uppercase',
+  },
+
+  text: {
+    fontSize: 18,
+  },
+
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 15,
+    paddingHorizontal: 12.5,
+    borderColor: '#aaa',
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+
+  column: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  leftIcon: {
+    marginRight: 10,
+    width: 20,
+  },
+
+  rightIcon: {
+    marginLeft: 10
+  },
+
+});
+
+export default NewShedule;

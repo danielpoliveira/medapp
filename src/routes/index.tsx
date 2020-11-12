@@ -4,7 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import BottomTabs from './bottomTabs.routes';
 
-import NewShedule from '../pages/NewShedule';
+import Shedule from '../pages/Shedule';
 import Patient from '../pages/Patient';
 
 import CustomStatusBar from '../components/CustomStatusBar';
@@ -27,9 +27,9 @@ const Routes = () => {
             options={{ headerShown: false }}
           />
           <Stack.Screen
-            name="NewShedule"
+            name="Shedule"
             options={{ headerTitle: 'Novo Agendamento' }}
-            component={NewShedule}
+            component={Shedule}
           />
           <Stack.Screen
             name="Patient"

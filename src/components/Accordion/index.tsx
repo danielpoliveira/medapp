@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import { View, TouchableOpacity, Text, FlatList, StyleSheet, LayoutAnimation, Platform, UIManager } from "react-native";
+import { View, TouchableOpacity, Text, FlatList, StyleSheet, LayoutAnimation, Platform, UIManager, Animated, Easing } from "react-native";
 import { Colors } from './Colors';
-
-import { MaterialIcons as Icon } from '@expo/vector-icons';
+import { AntDesign as Icon } from '@expo/vector-icons';
 
 interface AccordianProps {
+  navigation: any;
   title: string;
   data: {};
 }
@@ -14,7 +14,7 @@ interface AccordianState {
   data: [];
 }
 
-export default class Accordian extends Component<AccordianProps, AccordianState>{
+export default class Accordian extends Component<AccordianProps, AccordianState> {
 
   constructor(props: any) {
     super(props);
@@ -23,18 +23,43 @@ export default class Accordian extends Component<AccordianProps, AccordianState>
       expanded: false,
     }
 
-    if (Platform.OS === 'android') {
+    if (Platform.OS === 'android')
       UIManager.setLayoutAnimationEnabledExperimental(true);
-    }
   }
 
+  _renderItem() {
+    return ({ item, index }: any) => (
+      <View>
+        <TouchableOpacity
+          style={[styles.childRow, styles.button, item.value ? styles.btnActive : styles.btnInActive]}
+          onPress={() => /**this.onClick(index) */ this.props.navigation.navigate('Shedule')}>
+          <Text style={[styles.itemInActive]} >{item.key}</Text>
+
+        </TouchableOpacity>
+        <View style={styles.childHr} />
+      </View>
+    );
+  }
+
+  spinValue = new Animated.Value(0);
+
   render() {
+    
+    const spin = this.spinValue.interpolate({
+      inputRange: [0, 1],
+      outputRange: ['0deg', '180deg']
+    })
 
     return (
       <View>
         <TouchableOpacity style={styles.row} onPress={() => this.toggleExpand()}>
           <Text style={[styles.title]}>{this.props.title}</Text>
-          <Icon name={this.state.expanded ? 'keyboard-arrow-up' : 'keyboard-arrow-down'} size={30} color={Colors.DARKGRAY} />
+          
+          <Animated.View style={{transform: [{rotate: spin}] }}>
+            {/*<Icon name={this.state.expanded ? 'up' : 'down'} size={20} color={Colors.DARKGRAY} />*/}
+            <Icon name={'down'} size={20} color={Colors.DARKGRAY} />
+          </Animated.View>
+          
         </TouchableOpacity>
         <View style={styles.parentHr} />
         {
@@ -44,20 +69,13 @@ export default class Accordian extends Component<AccordianProps, AccordianState>
               data={this.state.data}
               numColumns={1}
               scrollEnabled={false}
-              renderItem={({ item, index }: any) =>
-                <View>
-                  <TouchableOpacity style={[styles.childRow, styles.button, item.value ? styles.btnActive : styles.btnInActive]} onPress={() => this.onClick(index)}>
-                    <Text style={[styles.itemInActive]} >{item.key}</Text>
-                    <Icon name={'check-circle'} size={24} color={item.value ? Colors.GREEN : Colors.LIGHTGRAY} />
-                  </TouchableOpacity>
-                  <View style={styles.childHr} />
-                </View>
-              } />
+              renderItem={this._renderItem()}
+            />
           </View>
         }
 
       </View>
-    )
+    );
   }
 
   onClick = (index: any) => {
@@ -69,6 +87,16 @@ export default class Accordian extends Component<AccordianProps, AccordianState>
   toggleExpand = () => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     this.setState({ expanded: !this.state.expanded })
+
+    Animated.timing(
+      this.spinValue,
+      {
+        toValue: Number(!this.state.expanded),
+        duration: 200,
+        easing: Easing.linear, // Easing is an additional import from react-native
+        useNativeDriver: true  // To make use of native driver for performance
+      }
+    ).start();
   }
 
 }

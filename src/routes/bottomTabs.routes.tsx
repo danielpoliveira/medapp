@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import { AntDesign, Fontisto, Ionicons } from '@expo/vector-icons';
 
-import Shedule from '../pages/Shedule';
+import Shedules from '../pages/Shedules';
 import Patients from '../pages/Patients';
 import Options from '../pages/Options';
 
@@ -12,7 +12,7 @@ const BottomTab = createBottomTabNavigator();
 const BottomTabs = () => {
   return (
     <BottomTab.Navigator>
-      <BottomTab.Screen name="Shedule" component={Shedule}
+      <BottomTab.Screen name="Shedules" component={Shedules}
         options={{
           tabBarIcon: ({ color, focused, size }) => <AntDesign name="calendar" color={color} size={size} />
         }}

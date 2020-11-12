@@ -19,7 +19,7 @@ const Routes = () => {
   return (
     <>
       <ExpoStatusBar style="dark" />
-      
+
       <NavigationContainer >
         <Stack.Navigator screenOptions={screenOptions}>
           <Stack.Screen
@@ -33,6 +33,7 @@ const Routes = () => {
           />
           <Stack.Screen
             name="Patient"
+            options={{ headerTitle: 'Paciente' }}
             component={Patient}
           />
         </Stack.Navigator>

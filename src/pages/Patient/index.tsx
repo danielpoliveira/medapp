@@ -1,6 +1,7 @@
-import React from 'react';
-import { Text, View, StyleSheet, Image, FlatList, ScrollView, Platform, StatusBar } from "react-native";
-import photo from '../../../assets/PerfilPhoto.jpg';
+import React, { useLayoutEffect } from 'react';
+import { Text, View, StyleSheet, Image, FlatList, ScrollView, TouchableOpacity, ImageProps } from "react-native";
+import { HeaderBackButton } from '@react-navigation/stack';
+import { AntDesign } from '@expo/vector-icons';
 
 const infoData = [{
   id: 1,
@@ -15,7 +16,20 @@ const infoData = [{
   Matricula: "12345"
 }];
 
-const Patient = () => {
+const Patient = ({ navigation }: any) => {
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerLeft: (props: any) => <HeaderBackButton {...props} label="Início" />,
+      headerRight: () => <HeaderRightButtom />,
+    });
+  }, [navigation]);
+
+  const HeaderRightButtom = () => (
+    <TouchableOpacity onPress={() => { }} style={styles.printContainer}>
+      <AntDesign name="printer" size={22} />
+    </TouchableOpacity>
+  );
+
   const renderSeparatorView = () => (
     <View
       style={{
@@ -29,12 +43,12 @@ const Patient = () => {
   return (
     <View style={styles.container}>
       <View style={styles.PerfilContainer}>
-        <Image source={photo} style={{ height: 70, width: 70, borderRadius: 100 }} />
+        <Image source={{ uri: 'https://avatars1.githubusercontent.com/u/38728374?s=460&u=038545e1533ecb70dd66e646eb51fb48105c379c&v=4' }} style={{ height: 70, width: 70, borderRadius: 100 }} />
         <View style={styles.PerfilContainerText}>
           <Text style={styles.Name}>Wesley Sousa</Text>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Text>21 anos</Text>
-            <Text style={{paddingHorizontal: 3.5, fontSize: 16,}}>•</Text> 
+            <Text style={{ paddingHorizontal: 3.5, fontSize: 16, }}>•</Text>
             <Text>Masculino</Text>
           </View>
         </View>
@@ -124,38 +138,51 @@ const styles = StyleSheet.create({
   renderText: {
 
   },
+
   Name: {
     fontSize: 20,
     fontWeight: "bold"
   },
+
   PerfilContainer: {
-    //paddingTop: 20,
     paddingLeft: 20,
     flexDirection: "row",
     alignItems: "center",
     paddingVertical: 10,
-
   },
+
   PerfilContainerText: {
     flexDirection: "column",
     paddingLeft: 25
-
   },
+
   Info: {
     padding: 5,
-
-
   },
+
   InfoTextView: {
     padding: 15,
     justifyContent: 'space-between',
     flexDirection: "row"
   },
+
   line: {
     height: 1,
     width: "100%",
     backgroundColor: "#CEDCCE",
-  }
+  },
+
+  printContainer: {
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    borderRadius: 50,
+  },
+
+  printText: {
+    fontSize: 18,
+    textTransform: 'uppercase',
+  },
+
 });
 
 export default Patient;

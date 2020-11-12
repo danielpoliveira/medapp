@@ -19,8 +19,8 @@ const NewShedule = ({ navigation }: any) => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
+      headerLeft: (props: any) => <HeaderBackButton {...props} label="Início" />,
       headerRight: () => <HeaderRightButtom />,
-      headerLeft: (props: any) => <HeaderBackButton {...props} label="Início" />
     });
   }, [navigation]);
 

@@ -6,7 +6,7 @@ import { MaterialIcons as Icon } from '@expo/vector-icons';
 
 interface AccordianProps {
   title: string;
-  data: [];
+  data: {};
 }
 
 interface AccordianState {

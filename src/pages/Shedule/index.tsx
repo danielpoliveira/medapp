@@ -8,6 +8,7 @@ import moment from 'moment'
 
 import Accordian from '../../components/Accordion';
 
+
 LogBox.ignoreAllLogs();
 
 /*const markedDates = {
@@ -44,8 +45,9 @@ const markedDates = [
   },
 ];
 
-const Shedule = ({ navigation }: any) => {
-  const [menu] = useState([{
+const Shedule = () => {
+  const [menu, setMenu] = useState([{
+    id: 1,
     title: 'Dr. Daniel Oliveira',
     data: [
       { key: '08:00 José Luiz Oliveira Barroso', value: false },
@@ -55,6 +57,7 @@ const Shedule = ({ navigation }: any) => {
     ]
   },
   {
+    id: 2,
     title: 'Dra. Anna Sophia',
     data: [
       { key: '10:00 Adriano Byrne Azevedo', value: false },
@@ -64,6 +67,7 @@ const Shedule = ({ navigation }: any) => {
     ]
   },
   {
+    id: 3,
     title: 'Dr. David',
     data: [
       { key: '13:00 Bruna Garcia da Silva', value: false },
@@ -71,6 +75,7 @@ const Shedule = ({ navigation }: any) => {
     ]
   },
   {
+    id: 4,
     title: 'Dr. Wesley',
     data: [
       { key: 'Choco Lava Cake', value: false },
@@ -85,7 +90,7 @@ const Shedule = ({ navigation }: any) => {
     let item;
     for (item of menu) {
       items.push(
-        <Accordian title={item.title} data={item.data} />
+        <Accordian title={item.title} data={item.data} key={item.id} />
       );
     }
     return items;

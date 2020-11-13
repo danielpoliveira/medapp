@@ -58,6 +58,14 @@ const Shedule = ({ navigation }: any) => {
   const { changeStatusBarMode, changeStatusBarBackground } = useStatusBarMode();
   const [menu, setMenu] = useState(data);
 
+  const markedDatesArray = [{
+    date: Date.now(),
+    dots: [{
+      color: '#FFF',
+      selectedColor: '#333',
+    }],
+  }];
+
   useFocusEffect(
     React.useCallback(() => {
       changeStatusBarMode('light');
@@ -76,13 +84,16 @@ const Shedule = ({ navigation }: any) => {
     return items;
   }
 
-  const handleAddPressed = () => {}
+  const handleAddPressed = () => { 
+    navigation.navigate('NewShedule');
+  }
 
   return (
     <React.Fragment>
       <View style={styles.container}>
         <CalendarStrip
           daySelectionAnimation={daySelectionAnimation}
+          markedDates={markedDatesArray}
           leftSelector={[]}
           rightSelector={[]}
           onDateSelected={() => { }}
@@ -90,20 +101,19 @@ const Shedule = ({ navigation }: any) => {
           scrollable
           highlightDateNameStyle={{ color: '#333' }}
           highlightDateNumberStyle={{ color: '#333' }}
-          style={{ height: 130, paddingTop: 20, paddingBottom: 10 }}
+          style={styles.calendaStripStyle}
           calendarColor="#EF694D"
-
-          calendarHeaderStyle={{ color: 'white', textTransform: 'capitalize'}}
+          calendarHeaderStyle={styles.calendaHeaderStyle}
           dateNumberStyle={{ color: 'white' }}
           dateNameStyle={{ color: 'white' }}
-          iconContainer={{ flex: 0.035 }}
+          iconContainer={{ flex: 0.025 }}
         />
 
-        <ScrollView style={{}}>
+        <ScrollView>
           {renderAccordians()}
         </ScrollView>
-
       </View>
+
       <View style={{ position: 'absolute', bottom: 20, right: 20, zIndex: 5 }}>
         <TouchableOpacity style={styles.addShedule} onPress={handleAddPressed} >
           <Ionicons name="ios-add" size={30} color="#FFFFFF" />
@@ -132,9 +142,26 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.36,
     shadowRadius: 6.68,
-
     elevation: 5,
+  },
+
+  calendaHeaderStyle: {
+    color: 'white',
+    textTransform: 'capitalize',
+  },
+
+  calendaStripStyle: {
+    height: 130,
+    paddingTop: 20,
+    paddingBottom: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 1, height: 1 },
+    shadowOpacity: 0.4,
+    shadowRadius: 3,
+    elevation: 10,
   }
+
+
 })
 
 export default Shedule;

@@ -16,11 +16,10 @@ import {
 
 import { useFocusEffect } from '@react-navigation/native';
 import { HeaderBackButton } from '@react-navigation/stack';
-import { Ionicons, Fontisto } from '@expo/vector-icons';
+import { Fontisto, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 import moment from 'moment';
 
-import ActionSheet from 'react-native-actionsheet';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 import { useStatusBarMode } from '../../contexts/statusBarMode';
@@ -33,6 +32,10 @@ const NewShedule = ({ navigation }: any) => {
   const [date, setDate] = useState(new Date(Date.now()));
   const [mode, setMode] = useState<IOSMode>('date');
   const [show, setShow] = useState(false);
+
+  const [dateText, setDateText] = useState<string | undefined>(undefined);
+  const [timeText, setTimeText] = useState<string | undefined>(undefined);
+
   const [selectActionSheet, setSelectActionSheet] = useState<number>('' as any);
 
   const { changeStatusBarMode, changeStatusBarBackground } = useStatusBarMode();
@@ -60,7 +63,15 @@ const NewShedule = ({ navigation }: any) => {
   const onChange = (event: any, selectedDate: any) => {
     const currentDate = selectedDate || date;
     setShow(Platform.OS === 'ios');
+
     setDate(currentDate);
+
+    if (selectedDate) {
+      if (mode === 'date')
+        setDateText(moment(currentDate).format('DD/MM/YYYY'));
+      else
+        setTimeText(moment(currentDate).format('hh:mm A'));
+    }
   };
 
   const showMode = (currentMode: any) => {
@@ -95,17 +106,17 @@ const NewShedule = ({ navigation }: any) => {
               <View style={{ borderRadius: 12.5, width: '90%', backgroundColor: '#FFF', overflow: 'hidden' }}>
                 <View style={styles.datetimePickerOptions}>
                   <TouchableOpacity onPress={() => setShow(false)}>
-                    <Text style={{ fontSize: 19, color: '#f20000' }}>Cancel</Text>
+                    <Text style={{ fontSize: 19, color: '#f20000' }}>Cancelar</Text>
                   </TouchableOpacity>
                   <TouchableOpacity onPress={() => setShow(false)}>
-                    <Text style={{ fontSize: 19, color: 'blue' }}>Ok</Text>
+                    <Text style={{ fontSize: 19, color: 'blue' }}>Selecionar</Text>
                   </TouchableOpacity>
                 </View>
                 <DateTimePicker
                   testID="dateTimePicker"
                   value={date}
                   mode={mode}
-                  //is24Hour={true}
+                  locale="pt-BR"
                   display="default"
                   onChange={onChange}
                 />
@@ -117,7 +128,6 @@ const NewShedule = ({ navigation }: any) => {
             testID="dateTimePicker"
             value={date}
             mode={mode}
-            //  is24Hour={true}
             display="default"
             onChange={onChange}
           />)
@@ -133,7 +143,7 @@ const NewShedule = ({ navigation }: any) => {
             </View>
 
             <View style={styles.column}>
-              <Text style={styles.text}>{moment(date).format('DD/MM/YYYY')}</Text>
+              <Text style={styles.text}>{dateText ?? 'Informe a data'}</Text>
               <Ionicons name='ios-arrow-forward' size={20} style={styles.rightIcon} />
             </View>
           </TouchableOpacity>
@@ -145,12 +155,12 @@ const NewShedule = ({ navigation }: any) => {
             </View>
 
             <View style={styles.column}>
-              <Text style={styles.text}>{moment(date).format('hh:mm A')}</Text>
+              <Text style={styles.text}>{timeText ?? 'Informe a hora'}</Text>
               <Ionicons name='ios-arrow-forward' size={20} style={styles.rightIcon} />
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.row}
             onPress={() => navigation.navigate('Patient')}
           >
@@ -160,58 +170,27 @@ const NewShedule = ({ navigation }: any) => {
             </View>
 
             <View style={styles.column}>
-              <Text style={styles.text}>Maria Luiza</Text>
+              <Text style={styles.text}>Selecione</Text>
               <Ionicons name='ios-arrow-forward' size={20} style={styles.rightIcon} />
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.row}>
+          <TouchableOpacity
+            style={styles.row}
+            onPress={() => navigation.navigate('Patient')}
+          >
             <View style={styles.column}>
-              <Ionicons name='ios-call' size={20} style={styles.leftIcon} />
-              <Text style={styles.text}>Telefone</Text>
+              <MaterialCommunityIcons name='doctor' size={20} style={styles.leftIcon} />
+              <Text style={styles.text}>Médico</Text>
             </View>
 
             <View style={styles.column}>
-              <Text style={styles.text}>(21) 1234-5678</Text>
+              <Text style={styles.text}>Selecione</Text>
               <Ionicons name='ios-arrow-forward' size={20} style={styles.rightIcon} />
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.row}>
-            <View style={styles.column}>
-              <Ionicons name='ios-phone-portrait' size={20} style={styles.leftIcon} />
-              <Text style={styles.text}>Celular</Text>
-            </View>
 
-            <View style={styles.column}>
-              <Text style={styles.text}>(21) 1234-5678</Text>
-              <Ionicons name='ios-arrow-forward' size={20} style={styles.rightIcon} />
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={showActionSheet} style={styles.row}>
-            <Text style={styles.text}>Status</Text>
-            <View>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text style={{ fontSize: 17 }}>{actionSheetOptions[selectActionSheet] ?? 'Selecione'}</Text>
-                <Ionicons name='ios-arrow-forward' size={20} style={styles.rightIcon} />
-              </View>
-              <ActionSheet
-                ref={refActionSheet}
-                title={'Selecione o status do agendamento'}
-                options={actionSheetOptions}
-                cancelButtonIndex={2}
-                destructiveButtonIndex={2}
-                tintColor={'#555'}
-                onPress={handleActionSheetPress}
-              />
-            </View>
-
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.row}>
-            <Text style={[styles.text, { color: '#F20000' }]}>Apagar agendamento</Text>
-          </TouchableOpacity>
         </View>
       </ScrollView>
     </React.Fragment>

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Text, View, FlatList, StyleSheet, TextInput, TouchableOpacityBase, } from "react-native";
+import { Text, View, FlatList, StyleSheet, TextInput, } from "react-native";
 import { Ionicons, Octicons } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useFocusEffect } from '@react-navigation/native';
 
-import { useStatusBarMode } from '../../contexts/statusBarMode';
+import { useStatusBarMode } from '../../contexts/statusBarMode';  
 
 const data = [
   'Pooja Mills',
@@ -131,7 +131,7 @@ const Patients = ({ navigation }: any) => {
   const [filteredDataSource, setFilteredDataSource] = useState(data);
   const [masterDataSource, setMasterDataSource] = useState(data);
 
-  const { changeStatusBarMode, changeStatusBarBackground, } = useStatusBarMode();
+  const { changeStatusBarMode, changeStatusBarBackground } = useStatusBarMode();
 
   useFocusEffect(
     React.useCallback(() => {
@@ -191,15 +191,17 @@ const Patients = ({ navigation }: any) => {
         />
       </View>
 
-      <View style={styles.addContainer}>
-        <TouchableOpacity 
+      <View style={[styles.addContainer]}>
+        <TouchableOpacity
           onPress={() => navigation.navigate('NewPatient')}
-          style={styles.buttom} 
+          style={styles.buttom}
         >
           <Octicons name="diff-added" size={22.5} color="#FFFFFF" />
           <Text style={{ fontSize: 20, color: '#FFFFFF', marginLeft: 10 }}>Novo paciente</Text>
         </TouchableOpacity>
       </View>
+
+
     </React.Fragment>
   )
 }

@@ -1,19 +1,10 @@
 import React from 'react';
 import { NavigationContainer, DefaultTheme, Theme } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
 
-import BottomTabs from './bottomTabs.routes';
+import { useAuth } from '../contexts/auth';
 
-import Shedule from '../pages/Shedule';
-import NewShedule from '../pages/NewShedule';
-import Patient from '../pages/Patient';
-import NewPatient from '../pages/NewPatient';
-
-const Stack = createStackNavigator();
-
-const screenOptions: any = {
-  headerTitleStyle: { alignSelf: 'center' },
-};
+import AppRoutes from './app.routes';
+import AuthRoutes from './auth.routes';
 
 const MyTheme = {
   ...DefaultTheme,
@@ -24,41 +15,16 @@ const MyTheme = {
 } as Theme;
 
 const Routes = () => {
+  const { signed, loading } = useAuth();
+
   return (
-    <>
-      <NavigationContainer theme={MyTheme}>
-        <Stack.Navigator screenOptions={screenOptions}>
-          <Stack.Screen
-            name="BottomTabs"
-            component={BottomTabs}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Shedule"
-            options={{ headerTitle: 'Agendamento' }}
-            component={Shedule}
-          />
-          <Stack.Screen
-            name="Patient"
-            options={{ headerTitle: 'Paciente' }}
-            component={Patient}
-          />
-
-          <Stack.Screen
-            name="NewPatient"
-            options={{ headerTitle: 'Cadastrar paciente' }}
-            component={NewPatient}
-          />
-
-          <Stack.Screen
-            name="NewShedule"
-            options={{ headerTitle: 'Novo agendamento' }}
-            component={NewShedule}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </>
-  );
+    <NavigationContainer theme={MyTheme}>
+      {!signed ?
+        <AppRoutes /> : <AuthRoutes />
+      }
+    </NavigationContainer>
+  )
 }
+
 
 export default Routes;

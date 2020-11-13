@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { Text, View, FlatList, StyleSheet, TextInput, } from "react-native";
-import { Octicons } from '@expo/vector-icons';
+import { Ionicons, Octicons } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useFocusEffect } from '@react-navigation/native';
 
-import { useStatusBarMode } from '../../contexts/statusBarMode';
-import ListSelector from '../../components/ListSelector';
+import { useStatusBarMode } from '../../contexts/statusBarMode';  
 
 const data = [
   'Pooja Mills',
@@ -117,7 +116,21 @@ const data = [
   'Shamas Alvarez',
 ];
 
+const RenderPatients = (props: ItemProps) => {
+  const { item, navigation } = props;
+
+  return (
+    <TouchableOpacity style={styles.renderContainer} onPress={() => navigation.navigate('Patient')}>
+      <Text style={styles.renderText}>{item}</Text>
+    </TouchableOpacity>
+  );
+}
+
 const Patients = ({ navigation }: any) => {
+  const [search, setSearch] = useState('');
+  const [filteredDataSource, setFilteredDataSource] = useState(data);
+  const [masterDataSource, setMasterDataSource] = useState(data);
+
   const { changeStatusBarMode, changeStatusBarBackground } = useStatusBarMode();
 
   useFocusEffect(
@@ -127,11 +140,55 @@ const Patients = ({ navigation }: any) => {
     }, [])
   );
 
+  const searchFilterFunction = (text: string) => {
+    if (text) {
+      const newData = masterDataSource.filter(
+        function (item: any) {
+          const itemData = item
+            ? item.toUpperCase()
+            : ''.toUpperCase();
+          const textData = text.toUpperCase();
+          return itemData.indexOf(textData) > -1;
+        });
+      setFilteredDataSource(newData);
+      setSearch(text);
+    } else {
+      setFilteredDataSource(masterDataSource);
+      setSearch(text);
+    }
+  };
+
+  const clearFilter = () => {
+    setSearch('');
+    setFilteredDataSource(masterDataSource)
+  }
+
   return (
     <React.Fragment>
-
       <View style={styles.container}>
-        <ListSelector mode="page" data={data} navigation={navigation} />
+        <View style={styles.searchContainer}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Ionicons name="ios-search" size={20} color="#3C3C4399" style={{ paddingRight: 5 }} />
+            <TextInput
+              value={search}
+              onChangeText={(text) => searchFilterFunction(text)}
+              placeholder="Pesquisar paciente"
+              placeholderTextColor="#3C3C4399"
+              style={{ fontSize: 18, }}
+            />
+          </View>
+          {search ?
+            <TouchableOpacity onPress={clearFilter} style={{ padding: 5, alignItems: 'center' }}>
+              <Ionicons name="ios-close" size={32} color="#3C3C4399" />
+            </TouchableOpacity>
+            : undefined
+          }
+        </View>
+
+        <FlatList
+          data={filteredDataSource}
+          renderItem={(props: any) => <RenderPatients {...props} navigation={navigation} />}
+        />
       </View>
 
       <View style={[styles.addContainer]}>
@@ -165,7 +222,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 
+  searchContainer: {
+    flexDirection: 'row',
+    backgroundColor: '#7676801F',
+    width: '95%',
+    height: 40,
+    paddingHorizontal: 12.5,
+    borderRadius: 15,
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginVertical: 10,
 
+  },
 
   addContainer: {
     position: 'absolute',
@@ -173,6 +242,7 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
+
   },
 
   buttom: {

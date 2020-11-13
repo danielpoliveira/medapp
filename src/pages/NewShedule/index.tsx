@@ -23,8 +23,7 @@ import moment from 'moment';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 import { useStatusBarMode } from '../../contexts/statusBarMode';
-
-const actionSheetOptions = ['Compareceu', 'Não compareceu', 'Cancelar'];
+import ListSelector from '../../components/ListSelector';
 
 const NewShedule = ({ navigation }: any) => {
   const refActionSheet = useRef(null) as any;
@@ -33,10 +32,11 @@ const NewShedule = ({ navigation }: any) => {
   const [mode, setMode] = useState<IOSMode>('date');
   const [show, setShow] = useState(false);
 
+  const [selectPatientMode, setSelectPatientMode] = useState(false);
+  const [selectMedicMode, setSelectMedicMode] = useState(false);
+
   const [dateText, setDateText] = useState<string | undefined>(undefined);
   const [timeText, setTimeText] = useState<string | undefined>(undefined);
-
-  const [selectActionSheet, setSelectActionSheet] = useState<number>('' as any);
 
   const { changeStatusBarMode, changeStatusBarBackground } = useStatusBarMode();
 
@@ -87,18 +87,20 @@ const NewShedule = ({ navigation }: any) => {
     showMode('time');
   };
 
-  const handleActionSheetPress = (buttonIndex: number) => {
-    if (buttonIndex < actionSheetOptions.length - 1)
-      setSelectActionSheet(buttonIndex);
+  const handlePatientSelectPress = () => {
+    setSelectPatientMode(true);
   }
 
-  const showActionSheet = () => {
-    if (refActionSheet.current)
-      refActionSheet.current.show();
+  const handleMedicSelectPress = () => {
+    setSelectMedicMode(true);
   }
 
   return (
     <React.Fragment>
+
+      <ListSelector mode="selector" data={[]} visible={selectPatientMode} setVisible={setSelectPatientMode} />
+      <ListSelector mode="selector" data={[]} visible={selectMedicMode} setVisible={setSelectMedicMode} />
+
       {show &&
         (Platform.OS === 'ios' ?
           (<Modal visible={true} transparent animationType={'fade'}>
@@ -143,7 +145,7 @@ const NewShedule = ({ navigation }: any) => {
             </View>
 
             <View style={styles.column}>
-              <Text style={styles.text}>{dateText ?? 'Informe a data'}</Text>
+              <Text style={styles.text}>{dateText ?? 'Selecione a data'}</Text>
               <Ionicons name='ios-arrow-forward' size={20} style={styles.rightIcon} />
             </View>
           </TouchableOpacity>
@@ -155,14 +157,14 @@ const NewShedule = ({ navigation }: any) => {
             </View>
 
             <View style={styles.column}>
-              <Text style={styles.text}>{timeText ?? 'Informe a hora'}</Text>
+              <Text style={styles.text}>{timeText ?? 'Selecione a hora'}</Text>
               <Ionicons name='ios-arrow-forward' size={20} style={styles.rightIcon} />
             </View>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.row}
-            onPress={() => navigation.navigate('Patient')}
+            onPress={handlePatientSelectPress}
           >
             <View style={styles.column}>
               <Fontisto name='heartbeat-alt' size={20} style={styles.leftIcon} />
@@ -177,7 +179,7 @@ const NewShedule = ({ navigation }: any) => {
 
           <TouchableOpacity
             style={styles.row}
-            onPress={() => navigation.navigate('Patient')}
+            onPress={handleMedicSelectPress}
           >
             <View style={styles.column}>
               <MaterialCommunityIcons name='doctor' size={20} style={styles.leftIcon} />

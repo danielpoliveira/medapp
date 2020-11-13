@@ -23,7 +23,7 @@ const Patient = ({ navigation }: any) => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerLeft: (props: any) => <HeaderBackButton {...props} label="Início" />,
+      headerLeft: (props: any) => <HeaderBackButton {...props} label="Voltar" />,
       headerRight: () => <HeaderRightButtom />,
     });
   }, [navigation]);

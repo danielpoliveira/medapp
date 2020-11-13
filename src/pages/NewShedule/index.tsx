@@ -9,8 +9,9 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
+  Platform,
+  Modal,
   ScrollView,
-  Linking,
 } from 'react-native';
 
 import { useFocusEffect } from '@react-navigation/native';
@@ -20,15 +21,18 @@ import { Ionicons, Fontisto } from '@expo/vector-icons';
 import moment from 'moment';
 
 import ActionSheet from 'react-native-actionsheet';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 import { useStatusBarMode } from '../../contexts/statusBarMode';
 
 const actionSheetOptions = ['Compareceu', 'Não compareceu', 'Cancelar'];
 
-const Shedule = ({ navigation }: any) => {
+const NewShedule = ({ navigation }: any) => {
   const refActionSheet = useRef(null) as any;
 
   const [date, setDate] = useState(new Date(Date.now()));
+  const [mode, setMode] = useState<IOSMode>('date');
+  const [show, setShow] = useState(false);
   const [selectActionSheet, setSelectActionSheet] = useState<number>('' as any);
 
   const { changeStatusBarMode, changeStatusBarBackground } = useStatusBarMode();
@@ -53,6 +57,25 @@ const Shedule = ({ navigation }: any) => {
     </TouchableOpacity>
   );
 
+  const onChange = (event: any, selectedDate: any) => {
+    const currentDate = selectedDate || date;
+    setShow(Platform.OS === 'ios');
+    setDate(currentDate);
+  };
+
+  const showMode = (currentMode: any) => {
+    setShow(true);
+    setMode(currentMode);
+  };
+
+  const showDatepicker = () => {
+    showMode('date');
+  };
+
+  const showTimepicker = () => {
+    showMode('time');
+  };
+
   const handleActionSheetPress = (buttonIndex: number) => {
     if (buttonIndex < actionSheetOptions.length - 1)
       setSelectActionSheet(buttonIndex);
@@ -65,9 +88,45 @@ const Shedule = ({ navigation }: any) => {
 
   return (
     <React.Fragment>
+      {show &&
+        (Platform.OS === 'ios' ?
+          (<Modal visible={true} transparent animationType={'fade'}>
+            <View style={{ flex: 1, backgroundColor: '#00000050', alignItems: 'center', justifyContent: 'center' }}>
+              <View style={{ borderRadius: 12.5, width: '90%', backgroundColor: '#FFF', overflow: 'hidden' }}>
+                <View style={styles.datetimePickerOptions}>
+                  <TouchableOpacity onPress={() => setShow(false)}>
+                    <Text style={{ fontSize: 19, color: '#f20000' }}>Cancel</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => setShow(false)}>
+                    <Text style={{ fontSize: 19, color: 'blue' }}>Ok</Text>
+                  </TouchableOpacity>
+                </View>
+                <DateTimePicker
+                  testID="dateTimePicker"
+                  value={date}
+                  mode={mode}
+                  //is24Hour={true}
+                  display="default"
+                  onChange={onChange}
+                />
+              </View>
+            </View>
+          </Modal>)
+          :
+          (<DateTimePicker
+            testID="dateTimePicker"
+            value={date}
+            mode={mode}
+            //  is24Hour={true}
+            display="default"
+            onChange={onChange}
+          />)
+        )
+      }
+
       <ScrollView>
         <View style={styles.container}>
-          <View style={styles.row}>
+          <TouchableOpacity onPress={showDatepicker} style={styles.row}>
             <View style={styles.column}>
               <Ionicons name='ios-calendar' size={20} style={styles.leftIcon} />
               <Text style={styles.text}>Data</Text>
@@ -75,10 +134,11 @@ const Shedule = ({ navigation }: any) => {
 
             <View style={styles.column}>
               <Text style={styles.text}>{moment(date).format('DD/MM/YYYY')}</Text>
+              <Ionicons name='ios-arrow-forward' size={20} style={styles.rightIcon} />
             </View>
-          </View>
+          </TouchableOpacity>
 
-          <View style={styles.row}>
+          <TouchableOpacity onPress={showTimepicker} style={styles.row}>
             <View style={styles.column}>
               <Ionicons name='ios-timer' size={20} style={styles.leftIcon} />
               <Text style={styles.text}>Hora</Text>
@@ -86,10 +146,11 @@ const Shedule = ({ navigation }: any) => {
 
             <View style={styles.column}>
               <Text style={styles.text}>{moment(date).format('hh:mm A')}</Text>
+              <Ionicons name='ios-arrow-forward' size={20} style={styles.rightIcon} />
             </View>
-          </View>
+          </TouchableOpacity>
 
-          <TouchableOpacity
+          <TouchableOpacity 
             style={styles.row}
             onPress={() => navigation.navigate('Patient')}
           >
@@ -104,13 +165,10 @@ const Shedule = ({ navigation }: any) => {
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.row}
-            onPress={() => Linking.openURL(`tel:5598912345678`)}
-          >
+          <TouchableOpacity style={styles.row}>
             <View style={styles.column}>
-              <Fontisto name='mobile-alt' size={20} style={styles.leftIcon} />
-              <Text style={styles.text}>Celular</Text>
+              <Ionicons name='ios-call' size={20} style={styles.leftIcon} />
+              <Text style={styles.text}>Telefone</Text>
             </View>
 
             <View style={styles.column}>
@@ -119,13 +177,10 @@ const Shedule = ({ navigation }: any) => {
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.row}
-            onPress={() => Linking.openURL(`whatsapp://send?phone=5598912345678`)}
-          >
+          <TouchableOpacity style={styles.row}>
             <View style={styles.column}>
-              <Fontisto name='whatsapp' size={18} style={styles.leftIcon} />
-              <Text style={styles.text}>WhatsApp</Text>
+              <Ionicons name='ios-phone-portrait' size={20} style={styles.leftIcon} />
+              <Text style={styles.text}>Celular</Text>
             </View>
 
             <View style={styles.column}>
@@ -217,4 +272,4 @@ const styles = StyleSheet.create({
 
 });
 
-export default Shedule;
+export default NewShedule;

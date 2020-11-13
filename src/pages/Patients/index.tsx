@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Text, View, FlatList, StyleSheet, TextInput, } from "react-native";
-import { Ionicons } from '@expo/vector-icons';
+import { Text, View, FlatList, StyleSheet, TextInput, TouchableOpacityBase, } from "react-native";
+import { Ionicons, Octicons } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useFocusEffect } from '@react-navigation/native';
 
@@ -118,6 +118,7 @@ const data = [
 
 const RenderPatients = (props: ItemProps) => {
   const { item, navigation } = props;
+
   return (
     <TouchableOpacity style={styles.renderContainer} onPress={() => navigation.navigate('Patient')}>
       <Text style={styles.renderText}>{item}</Text>
@@ -130,7 +131,7 @@ const Patients = ({ navigation }: any) => {
   const [filteredDataSource, setFilteredDataSource] = useState(data);
   const [masterDataSource, setMasterDataSource] = useState(data);
 
-  const {changeStatusBarMode, changeStatusBarBackground, } = useStatusBarMode();
+  const { changeStatusBarMode, changeStatusBarBackground, } = useStatusBarMode();
 
   useFocusEffect(
     React.useCallback(() => {
@@ -138,7 +139,7 @@ const Patients = ({ navigation }: any) => {
       changeStatusBarBackground('#FFFFFF');
     }, [])
   );
-  
+
   const searchFilterFunction = (text: string) => {
     if (text) {
       const newData = masterDataSource.filter(
@@ -159,12 +160,11 @@ const Patients = ({ navigation }: any) => {
 
   const clearFilter = () => {
     setSearch('');
-
     setFilteredDataSource(masterDataSource)
   }
 
   return (
-    <>
+    <React.Fragment>
       <View style={styles.container}>
         <View style={styles.searchContainer}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -178,25 +178,35 @@ const Patients = ({ navigation }: any) => {
             />
           </View>
           {search ?
-            <TouchableOpacity onPress={clearFilter} style={{ padding: 5, alignItems: 'center'}}>
+            <TouchableOpacity onPress={clearFilter} style={{ padding: 5, alignItems: 'center' }}>
               <Ionicons name="ios-close" size={32} color="#3C3C4399" />
             </TouchableOpacity>
             : undefined
           }
         </View>
 
-        <FlatList 
+        <FlatList
           data={filteredDataSource}
-          renderItem={(props: any) => <RenderPatients {...props} navigation={navigation} />} 
+          renderItem={(props: any) => <RenderPatients {...props} navigation={navigation} />}
         />
       </View>
-    </>
+
+      <View style={styles.addContainer}>
+        <TouchableOpacity 
+          onPress={() => navigation.navigate('NewPatient')}
+          style={styles.buttom} 
+        >
+          <Octicons name="diff-added" size={22.5} color="#FFFFFF" />
+          <Text style={{ fontSize: 20, color: '#FFFFFF', marginLeft: 10 }}>Novo paciente</Text>
+        </TouchableOpacity>
+      </View>
+    </React.Fragment>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
-  //  paddingTop: Platform.OS === 'ios' ? 20 : StatusBar.currentHeight, flex: 1,
+    flex: 1,
   },
 
   renderContainer: {
@@ -214,8 +224,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: '#7676801F',
     width: '95%',
-    //padding: 12.5,
-    //paddingVertical: 10,
     height: 40,
     paddingHorizontal: 12.5,
     borderRadius: 15,
@@ -224,6 +232,35 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginVertical: 10,
 
+  },
+
+  addContainer: {
+    position: 'absolute',
+    bottom: 20,
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+
+  },
+
+  buttom: {
+    backgroundColor: '#EF694D',
+    flexDirection: 'row',
+    alignItems: 'center',
+
+    paddingVertical: 20,
+    paddingHorizontal: 30,
+    borderRadius: 20,
+
+    shadowColor: "#555",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.36,
+    shadowRadius: 6.68,
+
+    elevation: 5,
   },
 
   search: {

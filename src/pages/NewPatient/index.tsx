@@ -156,7 +156,7 @@ const NewPatient = ({ navigation }: any) => {
               <FontAwesome5 name="birthday-cake" size={18} color="#777" />
               <TextInput
                 editable={false}
-                placeholder={dateText ?? 'Selecione'}
+                placeholder={dateText ?? 'Data de nascimento'}
                 style={{
                   padding: 10,
                   fontSize: 20
@@ -220,7 +220,7 @@ const NewPatient = ({ navigation }: any) => {
               <TextInput
                 editable={false}
                 placeholder={
-                  CapitalizeFirstLetter(estadoCivilOptions[estadoCivil] ?? 'selecione')
+                  CapitalizeFirstLetter(estadoCivilOptions[estadoCivil] ?? 'estado civil')
                 }
                 style={{
                   padding: 10,
@@ -241,7 +241,7 @@ const NewPatient = ({ navigation }: any) => {
               <TextInput
                 editable={false}
                 placeholder={
-                  CapitalizeFirstLetter(tipoSanguineoOptions[tipoSanguineo] ?? 'selecione')
+                  CapitalizeFirstLetter(tipoSanguineoOptions[tipoSanguineo] ?? 'tipo sanguíneo')
                 }
                 style={{
                   padding: 10,

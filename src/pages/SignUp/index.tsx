@@ -6,7 +6,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useStatusBarMode } from '../../contexts/statusBarMode';
 import { useFocusEffect } from '@react-navigation/native';
 
-const SignUp = () => {
+const SignUp = ({ navigation }: any) => {
   const { changeStatusBarMode, changeStatusBarBackground } = useStatusBarMode();
 
   useFocusEffect(
@@ -15,6 +15,10 @@ const SignUp = () => {
       changeStatusBarBackground('#EF694D');
     }, [])
   );
+
+  const handleLogin = () => {
+    navigation.navigate('Login');
+  }
 
   return (
     <View style={styles.container}>
@@ -77,6 +81,15 @@ const SignUp = () => {
 
         <TouchableOpacity style={styles.loginButtomContainer}>
           <Text style={styles.loginButtomText}>Criar Conta</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={handleLogin}
+          style={styles.signUpButtomContainer}>
+          <Text
+            style={styles.signUpButtomText}
+          >Possui uma conta? <Text style={{ fontWeight: 'bold' }}> Conecte-se!</Text>
+          </Text>
         </TouchableOpacity>
 
       </View>

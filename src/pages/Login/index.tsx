@@ -6,7 +6,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useStatusBarMode } from '../../contexts/statusBarMode';
 import { useFocusEffect } from '@react-navigation/native';
 
-const Login = () => {
+const Login = ({ navigation }: any) => {
   const { changeStatusBarMode, changeStatusBarBackground } = useStatusBarMode();
 
   useFocusEffect(
@@ -16,9 +16,16 @@ const Login = () => {
     }, [])
   );
 
+  const handleLogin = () => {
+    //navigation.navigate('BottomTabs');
+  }
+
+  const handleSignup = () => {
+    navigation.navigate('SignUp');
+  }
+
   return (
     <View style={styles.container}>
-
       <View style={styles.logoContainer}>
         <Image
           style={styles.logo}
@@ -61,18 +68,21 @@ const Login = () => {
           <Text style={styles.forgotPasswordText}>Esqueceu sua senha?</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.loginButtomContainer}>
+        <TouchableOpacity
+          onPress={handleLogin}
+          style={styles.loginButtomContainer}
+        >
           <Text style={styles.loginButtomText}>Entrar</Text>
         </TouchableOpacity>
 
-        <View style={styles.signUpButtomContainer}>
+        <TouchableOpacity
+          onPress={handleSignup}
+          style={styles.signUpButtomContainer}>
           <Text
             style={styles.signUpButtomText}
-          >Não tem uma conta?
-              <Text style={{ fontWeight: 'bold' }}> Cadastre-se!</Text>
+          >Não tem uma conta? <Text style={{ fontWeight: 'bold' }}> Cadastre-se!</Text>
           </Text>
-        </View>
-
+        </TouchableOpacity>
       </View>
     </View>
 

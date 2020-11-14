@@ -19,7 +19,7 @@ const Routes = () => {
 
   return (
     <NavigationContainer theme={MyTheme}>
-      {signed ?
+      {!signed ?
         <AppRoutes /> : <AuthRoutes />
       }
     </NavigationContainer>

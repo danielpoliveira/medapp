@@ -123,7 +123,7 @@ const Shedules = ({ navigation, route }: any) => {
         />
 
         <FlatList
-          keyExtractor={(props: any) => props.id.toString()}
+          keyExtractor={(item: any) => item.id.toString()}
           data={dataUsers}
           renderItem={props => <RenderItem {...props} navigation={navigation} />}
           contentContainerStyle={

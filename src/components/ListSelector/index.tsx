@@ -16,8 +16,6 @@ interface ListSelectorProps {
 const RenderItem = (props: any) => {
   const { item, mode, setSelect, navigation } = props;
 
-//  console.log('PROPS ---------->  ', setSelect)
-
   function handleNavigationPatient() {
     if(mode === 'page') {
       navigation.navigate('Patient', {
@@ -39,13 +37,8 @@ const RenderItem = (props: any) => {
 }
 
 const SearchContainer = ({ data, mode, setSelect, navigation }: any) => {
-
-  console.log('PROPS ---------->  ', setSelect)
-
   const [search, setSearch] = useState('');
   const [filteredDataSource, setFilteredDataSource] = useState([]);
-
-  console.log('search container', data)
 
   useFocusEffect(
     React.useCallback(() => {
@@ -99,6 +92,7 @@ const SearchContainer = ({ data, mode, setSelect, navigation }: any) => {
       </View>
 
       <FlatList
+        keyExtractor={(item: any) => item.id.toString()}
         data={filteredDataSource}
         renderItem={(props: any) => <RenderItem setSelect={setSelect} {...props} mode={mode} navigation={navigation} />}
       />
@@ -133,9 +127,6 @@ const CustomModal = ({ children, visible, visibleModal, navigation }: any) => {
 }
 
 const ListSelector = ({ mode, data, navigation, visible, setVisible, setSelect }: ListSelectorProps) => {
-  
-  console.log('AAAAAAAAAAAAA ',setVisible)
-
   return (
     mode === 'selector'
       ?

@@ -1,5 +1,6 @@
+import _ from 'lodash';
+
 import React, {
-  useRef,
   useState,
   useLayoutEffect,
   useEffect,
@@ -20,12 +21,15 @@ import { HeaderBackButton } from '@react-navigation/stack';
 import { Fontisto, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 import moment from 'moment';
+import 'moment/locale/pt-br';
 
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 import { useStatusBarMode } from '../../contexts/statusBarMode';
 import ListSelector from '../../components/ListSelector';
 import api from '../../services/api';
+
+moment.locale('pt-br');
 
 const NewShedule = ({ navigation }: any) => {
   const { changeStatusBarMode, changeStatusBarBackground } = useStatusBarMode();
@@ -40,23 +44,30 @@ const NewShedule = ({ navigation }: any) => {
   const [medicSelected, setMedicSelected] = useState<any>(undefined);
   const [patientSelected, setPatientSelected] = useState<any>(undefined);
 
-  const [dateText, setDateText] = useState<string | undefined>(undefined);
-  const [timeText, setTimeText] = useState<string | undefined>(undefined);
+  const [dateText, setDateText] = useState<any>(undefined);
+  const [timeText, setTimeText] = useState<any>(undefined);
 
   const [medic, setMedic] = useState([]);
   const [patient, setPatient] = useState([]);
+
+  const [save, setSave] = useState(false);
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: (props: any) => <HeaderBackButton {...props} label="Voltar" />,
       headerRight: () => <HeaderRightButtom />,
     });
-  }, [navigation]);
+  }, [navigation, save]);
 
   useFocusEffect(
     React.useCallback(() => {
       changeStatusBarMode('dark');
       changeStatusBarBackground('#FFFFFF');
+
+      setPatientSelected(undefined);
+      setMedicSelected(undefined);
+      setDateText(undefined);
+      setTimeText(undefined);
     }, [])
   );
 
@@ -68,18 +79,39 @@ const NewShedule = ({ navigation }: any) => {
     setSelectMedicMode(false);
   }, [medicSelected]);
 
+  useEffect(() => {
+    if (
+      !_.isEmpty(patientSelected) &&
+      !_.isEmpty(medicSelected) &&
+      dateText &&
+      timeText
+    ) 
+      setSave(true);
+
+  }, [patientSelected, medicSelected, dateText, timeText]);
+
 
   async function handleSavePress() {
-    console.log(dateText);
-    console.log(dateText);
+    if (save) {
+      const datetime = moment(moment(dateText).format('YYYY-MM-DD') + ' ' + moment(timeText).format('HH:mm:ss'))
+
+      await api.post('/user/agendamentos/new/', {
+        paciente: patientSelected?.id,
+        medico: medicSelected?.id,
+        datetime,
+      }).then(res => {
+        navigation.navigate('Shedules');
+      });
+    }
   }
 
-
   const HeaderRightButtom = () => (
-    <TouchableOpacity onPress={() => { }} 
+    <TouchableOpacity
+      disabled={!save}
+      onPress={handleSavePress}
       style={styles.saveContainer}
     >
-      <Text style={styles.saveText}>Save</Text>
+      <Text style={[styles.saveText, !save && {color:'#ccc'}]}>Save</Text>
     </TouchableOpacity>
   );
 
@@ -90,10 +122,11 @@ const NewShedule = ({ navigation }: any) => {
     setDate(currentDate);
 
     if (selectedDate) {
-      if (mode === 'date')
-        setDateText(moment(currentDate).format('DD/MM/YYYY'));
-      else
-        setTimeText(moment(currentDate).format('hh:mm A'));
+      if (mode === 'date') {
+        setDateText(moment(currentDate));
+      } else {
+        setTimeText(moment(currentDate));
+      }
     }
   };
 
@@ -187,7 +220,7 @@ const NewShedule = ({ navigation }: any) => {
             </View>
 
             <View style={styles.column}>
-              <Text style={styles.text}>{dateText ?? 'Selecione a data'}</Text>
+              <Text style={styles.text}>{dateText? moment(dateText).format('DD/MM/YYYY') : 'Selecione a data'}</Text>
               <Ionicons name='ios-arrow-forward' size={20} style={styles.rightIcon} />
             </View>
           </TouchableOpacity>
@@ -199,7 +232,7 @@ const NewShedule = ({ navigation }: any) => {
             </View>
 
             <View style={styles.column}>
-              <Text style={styles.text}>{timeText ?? 'Selecione a hora'}</Text>
+              <Text style={styles.text}>{timeText? moment(timeText).format('hh:mm A') : 'Selecione a hora'}</Text>
               <Ionicons name='ios-arrow-forward' size={20} style={styles.rightIcon} />
             </View>
           </TouchableOpacity>
@@ -262,6 +295,7 @@ const styles = StyleSheet.create({
   saveText: {
     fontSize: 18,
     textTransform: 'uppercase',
+    color: '#EF694D',
   },
 
   text: {

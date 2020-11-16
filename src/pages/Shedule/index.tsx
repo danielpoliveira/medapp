@@ -83,23 +83,24 @@ const Shedule = ({ navigation, route }: any) => {
     }
   }
 
-  async function handleRemovePress() {    
+  async function handleRemovePress() {
     const res = await api.delete(`/user/agendamentos/remove/${item.id}`)
-    .then(res => {
-      navigation.navigate('Shedules', { date });
-    });
+      .then(res => {
+        navigation.navigate('Shedules', { date });
+      });
   }
 
   const HeaderRightButtom = () => {
     return (
       <TouchableOpacity
-        onPress={handleSavePress} style={styles.saveContainer}>
-        <Text style={[styles.saveText]}>Save</Text>
+        disabled={!edited}
+        onPress={handleSavePress}
+        style={styles.saveContainer}
+      >
+        <Text style={[styles.saveText, !edited && { color: '#ccc' }]}>Save</Text>
       </TouchableOpacity>
     );
   }
-
-
 
   return (
     <React.Fragment>
@@ -172,8 +173,8 @@ const Shedule = ({ navigation, route }: any) => {
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity 
-            onPress={showActionSheet} 
+          <TouchableOpacity
+            onPress={showActionSheet}
             style={styles.row}
           >
             <Text style={styles.text}>Status</Text>
@@ -186,11 +187,11 @@ const Shedule = ({ navigation, route }: any) => {
 
           </TouchableOpacity>
 
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.removeContainer}
             onPress={handleRemovePress}
           >
-            <Ionicons name='md-trash' size={22} style={styles.leftIcon} color="#e53935"/>
+            <Ionicons name='md-trash' size={22} style={styles.leftIcon} color="#e53935" />
             <Text style={[styles.text, { color: '#e53935', fontSize: 20 }]}>Apagar agendamento</Text>
           </TouchableOpacity>
         </View>
@@ -226,6 +227,7 @@ const styles = StyleSheet.create({
   saveText: {
     fontSize: 18,
     textTransform: 'uppercase',
+    color: '#EF694D',
   },
 
   text: {

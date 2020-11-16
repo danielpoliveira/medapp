@@ -5,18 +5,10 @@ import { AntDesign } from '@expo/vector-icons';
 import { useStatusBarMode } from '../../contexts/statusBarMode';
 import { useFocusEffect } from '@react-navigation/native';
 
-const infoData = [{
-  id: 1,
-  nascimento: "07/12/1999",
-  estadoCivil: "Casado",
-  Naturalidade: "Maranhão",
-  CPF: "61906410321",
-  RG: "1234567890",
-  FatorSanguineo: "0+",
-  Convenio: "UNIMED",
-  Plano: "Especial",
-  Matricula: "12345"
-}];
+import moment from 'moment';
+import 'moment/locale/pt-br';
+
+moment.locale('pt-br');
 
 const Patient = ({ navigation, route }: any) => {
   const { changeStatusBarMode, changeStatusBarBackground, } = useStatusBarMode();
@@ -43,16 +35,6 @@ const Patient = ({ navigation, route }: any) => {
     </TouchableOpacity>
   );
 
-  const renderSeparatorView = () => (
-    <View
-      style={{
-        height: 1,
-        width: "100%",
-        backgroundColor: "#CEDCCE",
-      }}
-    />
-  );
-
   return (
     <View style={styles.container}>
       <View style={styles.PerfilContainer}>
@@ -60,9 +42,9 @@ const Patient = ({ navigation, route }: any) => {
         <View style={styles.PerfilContainerText}>
           <Text style={styles.Name}>{patient.nome}</Text>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text>21 anos</Text>
+            <Text>{moment().diff(patient.data_nascimento, 'years')} anos</Text>
             <Text style={{ paddingHorizontal: 3.5, fontSize: 16, }}>•</Text>
-            <Text>Masculino</Text>
+            <Text style={{ textTransform: 'capitalize' }}>{patient.sexo}</Text>
           </View>
         </View>
       </View>
@@ -71,12 +53,12 @@ const Patient = ({ navigation, route }: any) => {
         <Text style={{ padding: 15, fontWeight: 'bold' }}>Informações Principais</Text>
         <View style={styles.InfoTextView}>
           <Text>Data de Nascimento  </Text>
-          <Text>07/12/1999</Text>
+          <Text>{moment(patient.data_nascimento).format('DD/MM/YYYY')}</Text>
         </View>
         <View style={styles.line} />
         <View style={styles.InfoTextView}>
           <Text>Estado Civil  </Text>
-          <Text>{patient.estado_civil}</Text>
+          <Text style={{ textTransform: 'capitalize' }}>{patient.estado_civil}</Text>
         </View>
         <View style={styles.line} />
 
@@ -119,7 +101,7 @@ const Patient = ({ navigation, route }: any) => {
         <View style={styles.line} />
 
         <View style={styles.InfoTextView}>
-          <Text>Matricula</Text>
+          <Text>Matricula (id)</Text>
           <Text>{patient.id}</Text>
         </View>
         <View style={styles.line} />

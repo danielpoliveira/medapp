@@ -2,6 +2,7 @@ import React, {
   useRef,
   useState,
   useLayoutEffect,
+  useEffect,
 } from 'react';
 
 import {
@@ -24,9 +25,10 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 
 import { useStatusBarMode } from '../../contexts/statusBarMode';
 import ListSelector from '../../components/ListSelector';
+import api from '../../services/api';
 
 const NewShedule = ({ navigation }: any) => {
-  const refActionSheet = useRef(null) as any;
+  const { changeStatusBarMode, changeStatusBarBackground } = useStatusBarMode();
 
   const [date, setDate] = useState(new Date(Date.now()));
   const [mode, setMode] = useState<IOSMode>('date');
@@ -35,10 +37,14 @@ const NewShedule = ({ navigation }: any) => {
   const [selectPatientMode, setSelectPatientMode] = useState(false);
   const [selectMedicMode, setSelectMedicMode] = useState(false);
 
+  const [medicSelected, setMedicSelected] = useState<any>(undefined);
+  const [patientSelected, setPatientSelected] = useState<any>(undefined);
+
   const [dateText, setDateText] = useState<string | undefined>(undefined);
   const [timeText, setTimeText] = useState<string | undefined>(undefined);
 
-  const { changeStatusBarMode, changeStatusBarBackground } = useStatusBarMode();
+  const [medic, setMedic] = useState([]);
+  const [patient, setPatient] = useState([]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -54,8 +60,25 @@ const NewShedule = ({ navigation }: any) => {
     }, [])
   );
 
+  useEffect(() => {
+    setSelectPatientMode(false);
+  }, [patientSelected]);
+
+  useEffect(() => {
+    setSelectMedicMode(false);
+  }, [medicSelected]);
+
+
+  async function handleSavePress() {
+    console.log(dateText);
+    console.log(dateText);
+  }
+
+
   const HeaderRightButtom = () => (
-    <TouchableOpacity onPress={() => { }} style={styles.saveContainer}>
+    <TouchableOpacity onPress={() => { }} 
+      style={styles.saveContainer}
+    >
       <Text style={styles.saveText}>Save</Text>
     </TouchableOpacity>
   );
@@ -87,19 +110,38 @@ const NewShedule = ({ navigation }: any) => {
     showMode('time');
   };
 
-  const handlePatientSelectPress = () => {
-    setSelectPatientMode(true);
+  async function handleMedicSelectPress() {
+    const res = await api.get('/medics/all/')
+      .then(res => {
+        setMedic(res.data);
+        setSelectMedicMode(true);
+      });
   }
 
-  const handleMedicSelectPress = () => {
-    setSelectMedicMode(true);
+  async function handlePatientSelectPress() {
+    const res = await api.get('/user/pacientes/all/')
+      .then(res => {
+        setPatient(res.data);
+        setSelectPatientMode(true);
+      });
   }
 
   return (
     <React.Fragment>
-
-      <ListSelector mode="selector" data={[]} visible={selectPatientMode} setVisible={setSelectPatientMode} />
-      <ListSelector mode="selector" data={[]} visible={selectMedicMode} setVisible={setSelectMedicMode} />
+      <ListSelector
+        mode="selector"
+        data={patient}
+        visible={selectPatientMode}
+        setVisible={setSelectPatientMode}
+        setSelect={setPatientSelected}
+      />
+      <ListSelector
+        mode="selector"
+        data={medic}
+        visible={selectMedicMode}
+        setVisible={setSelectMedicMode}
+        setSelect={setMedicSelected}
+      />
 
       {show &&
         (Platform.OS === 'ios' ?
@@ -172,7 +214,7 @@ const NewShedule = ({ navigation }: any) => {
             </View>
 
             <View style={styles.column}>
-              <Text style={styles.text}>Selecione</Text>
+              <Text style={styles.text}>{patientSelected?.nome ?? 'Selecione'}</Text>
               <Ionicons name='ios-arrow-forward' size={20} style={styles.rightIcon} />
             </View>
           </TouchableOpacity>
@@ -187,12 +229,10 @@ const NewShedule = ({ navigation }: any) => {
             </View>
 
             <View style={styles.column}>
-              <Text style={styles.text}>Selecione</Text>
+              <Text style={styles.text}>{medicSelected?.nome ?? 'Selecione'}</Text>
               <Ionicons name='ios-arrow-forward' size={20} style={styles.rightIcon} />
             </View>
           </TouchableOpacity>
-
-
         </View>
       </ScrollView>
     </React.Fragment>

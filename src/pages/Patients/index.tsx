@@ -9,133 +9,31 @@ import ListSelector from '../../components/ListSelector';
 
 import api from '../../services/api';
 
-const data = [
-  'Pooja Mills',
-  'Lacie-Mae Milner',
-  'Rosa Fuller',
-  'Otis Bannister',
-  'Fabio Foley',
-  'Breanna Britt',
-  'Cassia Chavez',
-  'Reema Mcgee',
-  'Jack Battle',
-  'Daniel Oliveira',
-  'Zakariyya Marks',
-  'Danni Holman',
-  'Patricia Chamberlain',
-  'Arjun Redfern',
-  'Khalid Aldred',
-  'Edna Penn',
-  'Wasim Woolley',
-  'Kornelia Jimenez',
-  'Hasnain Sierra',
-  'Alivia Kirk',
-  'Isa Sloan',
-  'Paul Cherry',
-  'Dillan Fraser',
-  'Reanne Bain',
-  'Giacomo Ferguson',
-  'Jaxson Cobb',
-  'Olivier Lindsay',
-  'Kloe Johnson',
-  'Anna Sophia',
-  'Malachy Bonner',
-  'Daniyal Peel',
-  'Edward Lees',
-  'Jobe Dillard',
-  'Humaira Ford',
-  'Amelia-Mae Rosa',
-  'Blaine Peterson',
-  'Bree Herrera',
-  'Jazmyn Fritz',
-  'Lena Wharton',
-  'Corinne Vega',
-  'Juniper Adamson',
-  'Rhodri Sweeney',
-  'Wesley sousa',
-  'Blade Yates',
-  'Lyndon Lim',
-  'Hakim Bass',
-  'Aneesha Dunlap',
-  'Chelsey Singh',
-  'Keavy Crossley',
-  'Collette Hebert',
-  'Rafe Riley',
-  'Clistenys Eduardo',
-  'Astrid Wu',
-  'Adele Whittington',
-  'Kaydee Rosario',
-  'Joann Padilla',
-  'Mattie Berry',
-  'Danielius Huffman',
-  'Glen Hodge',
-  'Aron Medrano',
-  'Miruna Gonzalez',
-  'Ulisses Natan',
-  'Clare Simpson',
-  'Yusef Ventura',
-  'Emyr Major',
-  'Vivian Guest',
-  'Maya Ballard',
-  'Maureen Ratliff',
-  'Asia Glenn',
-  'Franklyn Eastwood',
-  'Penelope Sandoval',
-  'Pedro Lucas',
-  'Grant Wickens',
-  'Libby Beasley',
-  'Richard Deleon',
-  'Ishaaq Vazquez',
-  'Sachin Howell',
-  'Meg Cummings',
-  'Alessia Roach',
-  'Daniel Ribeiro',
-  'Arwen French',
-  'Jackson Merritt',
-  'Yisroel Hobbs',
-  'Evie-May Price',
-  'Kwame Seymour',
-  'Lexi Ridley',
-  'Sarah-Louise Jacobson',
-  'Connagh Ritter',
-  'Callam Hayes',
-  'Sofija Salinas',
-  'Cherish Dorsey',
-  'Saara Burks',
-  'Cloe Vaughan',
-  'Ebrahim Aguilar',
-  'Autumn Juarez',
-  'Esther Frederick',
-  'Jasmin Love',
-  'Alys Edge',
-  'Emrys Rhodes',
-  'Braiden Avalos',
-  'Gerard Rossi',
-  'Chyna Hartman',
-  'Dilara Moore',
-  'Amirah Bowler',
-  'Britney Weston',
-  'Robbie Mackenzie',
-  'Shamas Alvarez',
-];
-
 const Patients = ({ navigation }: any) => {
   const { changeStatusBarMode, changeStatusBarBackground } = useStatusBarMode();
+  const [data, setData] = useState([]);
+
+  async function loadPatients() {
+    const res = await api.get('/user/pacientes/all/').then(res => {
+      setData(res.data);
+    });
+  }
 
   useFocusEffect(
     React.useCallback(() => {
       changeStatusBarMode('dark');
       changeStatusBarBackground('#FFFFFF');
+
+      loadPatients();
     }, [])
   );
 
   useEffect(() => {
-    
+
   }, []);
 
   return (
     <React.Fragment>
-
       <View style={styles.container}>
         <ListSelector mode="page" data={data} navigation={navigation} />
       </View>

@@ -23,8 +23,6 @@ const Patient = ({ navigation, route }: any) => {
 
   const { patient } = route.params;
 
-  console.log('PACIENTE ---> ', patient);
-
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: (props: any) => <HeaderBackButton {...props} label="Voltar" />,

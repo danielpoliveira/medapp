@@ -1,50 +1,78 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, StyleSheet, FlatList, TouchableOpacity, Platform, Alert, Modal, TouchableWithoutFeedback, } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, StyleSheet, FlatList, TouchableOpacity, Modal } from 'react-native';
 
 import { Ionicons, AntDesign } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
 
 interface ListSelectorProps {
   mode: 'page' | 'selector',
   data: any,
   navigation?: any;
   visible?: boolean;
+  setSelect?: (value: {}) => void;
   setVisible?: (prop: boolean) => void;
 }
 
-const RenderItem = (props: ItemProps) => {
-  const { item, navigation } = props;
+const RenderItem = (props: any) => {
+  const { item, mode, setSelect, navigation } = props;
+
+//  console.log('PROPS ---------->  ', setSelect)
+
+  function handleNavigationPatient() {
+    if(mode === 'page') {
+      navigation.navigate('Patient', {
+        patient: item,
+      });
+    } else {
+      setSelect(item);
+    }
+  }
 
   return (
-    <TouchableOpacity style={styles.renderContainer} onPress={() => navigation.navigate('Patient')}>
-      <Text style={styles.renderText}>{item}</Text>
+    <TouchableOpacity
+      style={styles.renderContainer}
+      onPress={handleNavigationPatient}
+    >
+      <Text style={styles.renderText}>{item.nome}</Text>
     </TouchableOpacity>
   );
 }
 
-const SearchContainer = ({ data, navigation }: any) => {
+const SearchContainer = ({ data, mode, setSelect, navigation }: any) => {
+
+  console.log('PROPS ---------->  ', setSelect)
+
   const [search, setSearch] = useState('');
-  const [filteredDataSource, setFilteredDataSource] = useState(data);
-  const [masterDataSource, setMasterDataSource] = useState(data);
+  const [filteredDataSource, setFilteredDataSource] = useState([]);
+
+  console.log('search container', data)
+
+  useFocusEffect(
+    React.useCallback(() => {
+      setFilteredDataSource(data);
+    }, [data])
+  );
 
   const clearFilter = () => {
     setSearch('');
-    setFilteredDataSource(masterDataSource)
+    setFilteredDataSource(data)
   }
 
   const searchFilterFunction = (text: string) => {
     if (text) {
-      const newData: any = masterDataSource.filter(
+      const newData: any = data.filter(
         function (item: any) {
           const itemData = item
-            ? item.toUpperCase()
+            ? item.nome.toUpperCase()
             : ''.toUpperCase();
           const textData = text.toUpperCase();
           return itemData.indexOf(textData) > -1;
         });
+
       setFilteredDataSource(newData);
       setSearch(text);
     } else {
-      setFilteredDataSource(masterDataSource);
+      setFilteredDataSource(data);
       setSearch(text);
     }
   };
@@ -72,8 +100,9 @@ const SearchContainer = ({ data, navigation }: any) => {
 
       <FlatList
         data={filteredDataSource}
-        renderItem={(props: any) => <RenderItem {...props} navigation={navigation} />}
+        renderItem={(props: any) => <RenderItem setSelect={setSelect} {...props} mode={mode} navigation={navigation} />}
       />
+
     </View>
   );
 }
@@ -103,17 +132,25 @@ const CustomModal = ({ children, visible, visibleModal, navigation }: any) => {
   );
 }
 
-const ListSelector = ({ mode, data, navigation, visible, setVisible }: ListSelectorProps) => {
+const ListSelector = ({ mode, data, navigation, visible, setVisible, setSelect }: ListSelectorProps) => {
+  
+  console.log('AAAAAAAAAAAAA ',setVisible)
+
   return (
     mode === 'selector'
       ?
       <CustomModal visible={visible} visibleModal={setVisible} navigation={navigation}>
-        <View style={{ /*paddingTop: Platform.OS === 'ios' ? 20 : 0, */ }}>
-          <SearchContainer data={data} navigation={navigation} />
+        <View style={{ flex: 1 }}>
+          <SearchContainer 
+            data={data} 
+            navigation={navigation} 
+            mode={'selector'} 
+            setSelect={setSelect} 
+          />
         </View>
       </CustomModal>
       :
-      <SearchContainer data={data} navigation={navigation} />
+      <SearchContainer data={data} navigation={navigation} mode={'page'} />
   );
 }
 const styles = StyleSheet.create({

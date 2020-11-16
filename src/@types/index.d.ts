@@ -11,7 +11,7 @@ declare module "*.png" {
 type IOSMode = 'date' | 'time' | 'datetime' | 'countdown' | undefined;
 
 interface ItemProps {
-  item: string;
+  item: any;
   navigation: any;
 }
 

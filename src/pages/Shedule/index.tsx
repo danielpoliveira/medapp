@@ -1,5 +1,4 @@
 import React, {
-  useRef,
   useState,
   useLayoutEffect,
 } from 'react';
@@ -13,32 +12,35 @@ import {
   Linking,
 } from 'react-native';
 
+import { useActionSheet } from '@expo/react-native-action-sheet'
 import { useFocusEffect } from '@react-navigation/native';
 import { HeaderBackButton } from '@react-navigation/stack';
 import { Ionicons, Fontisto } from '@expo/vector-icons';
 
 import moment from 'moment';
-
-import ActionSheet from 'react-native-actionsheet';
+moment.locale('pt-br');
 
 import { useStatusBarMode } from '../../contexts/statusBarMode';
+import api from '../../services/api';
 
-const actionSheetOptions = ['Compareceu', 'Não compareceu', 'Cancelar'];
-
-const Shedule = ({ navigation }: any) => {
-  const refActionSheet = useRef(null) as any;
-
-  const [date, setDate] = useState(new Date(Date.now()));
-  const [selectActionSheet, setSelectActionSheet] = useState<number>('' as any);
-
+const Shedule = ({ navigation, route }: any) => {
   const { changeStatusBarMode, changeStatusBarBackground } = useStatusBarMode();
+  const { showActionSheetWithOptions } = useActionSheet();
+
+  const { item } = route.params;
+
+  const [date, setDate] = useState(moment(item.datetime || Date.now()));
+  const [selectActionSheet, setSelectActionSheet] = useState<number>(undefined as any);
+  const [edited, setEdited] = useState(false);
+
+  const actionSheetOptions = ['Compareceu', 'Não compareceu', 'Cancelar'];
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: (props: any) => <HeaderBackButton {...props} label="Voltar" />,
       headerRight: () => <HeaderRightButtom />,
     });
-  }, [navigation]);
+  }, [navigation, edited]);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -47,21 +49,57 @@ const Shedule = ({ navigation }: any) => {
     }, [])
   );
 
-  const HeaderRightButtom = () => (
-    <TouchableOpacity onPress={() => { }} style={styles.saveContainer}>
-      <Text style={styles.saveText}>Save</Text>
-    </TouchableOpacity>
-  );
-
-  const handleActionSheetPress = (buttonIndex: number) => {
-    if (buttonIndex < actionSheetOptions.length - 1)
-      setSelectActionSheet(buttonIndex);
+  const handlePatientPress = () => {
+    navigation.navigate('Patient', {
+      patient: item.patient,
+    });
   }
 
   const showActionSheet = () => {
-    if (refActionSheet.current)
-      refActionSheet.current.show();
+    showActionSheetWithOptions({
+      options: actionSheetOptions,
+      cancelButtonIndex: 2,
+      title: 'Selecione o status do agendamento',
+    }, (index: number) => {
+
+      if (index !== 2) {
+        setSelectActionSheet(index);
+        setEdited(true)
+      } else {
+        setSelectActionSheet('');
+        setEdited(false)
+      }
+    });
   }
+
+  async function handleSavePress() {
+    if (edited) {
+      const res = await api.put('/user/agendamentos/edit/', {
+        id: item.id,
+        status: actionSheetOptions[selectActionSheet],
+      }).then(res => {
+        navigation.navigate('Shedules', { date });
+      })
+    }
+  }
+
+  async function handleRemovePress() {    
+    const res = await api.delete(`/user/agendamentos/remove/${item.id}`)
+    .then(res => {
+      navigation.navigate('Shedules', { date });
+    });
+  }
+
+  const HeaderRightButtom = () => {
+    return (
+      <TouchableOpacity
+        onPress={handleSavePress} style={styles.saveContainer}>
+        <Text style={[styles.saveText]}>Save</Text>
+      </TouchableOpacity>
+    );
+  }
+
+
 
   return (
     <React.Fragment>
@@ -91,7 +129,7 @@ const Shedule = ({ navigation }: any) => {
 
           <TouchableOpacity
             style={styles.row}
-            onPress={() => navigation.navigate('Patient')}
+            onPress={handlePatientPress}
           >
             <View style={styles.column}>
               <Fontisto name='heartbeat-alt' size={20} style={styles.leftIcon} />
@@ -99,7 +137,7 @@ const Shedule = ({ navigation }: any) => {
             </View>
 
             <View style={styles.column}>
-              <Text style={styles.text}>Maria Luiza</Text>
+              <Text style={styles.text}>{item.patient.nome}</Text>
               <Ionicons name='ios-arrow-forward' size={20} style={styles.rightIcon} />
             </View>
           </TouchableOpacity>
@@ -114,7 +152,7 @@ const Shedule = ({ navigation }: any) => {
             </View>
 
             <View style={styles.column}>
-              <Text style={styles.text}>(21) 1234-5678</Text>
+              <Text style={styles.text}>{item.patient.celular}</Text>
               <Ionicons name='ios-arrow-forward' size={20} style={styles.rightIcon} />
             </View>
           </TouchableOpacity>
@@ -129,33 +167,31 @@ const Shedule = ({ navigation }: any) => {
             </View>
 
             <View style={styles.column}>
-              <Text style={styles.text}>(21) 1234-5678</Text>
+              <Text style={styles.text}>{item.patient.whatsapp}</Text>
               <Ionicons name='ios-arrow-forward' size={20} style={styles.rightIcon} />
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={showActionSheet} style={styles.row}>
+          <TouchableOpacity 
+            onPress={showActionSheet} 
+            style={styles.row}
+          >
             <Text style={styles.text}>Status</Text>
             <View>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Text style={{ fontSize: 17 }}>{actionSheetOptions[selectActionSheet] ?? 'Selecione'}</Text>
                 <Ionicons name='ios-arrow-forward' size={20} style={styles.rightIcon} />
               </View>
-              <ActionSheet
-                ref={refActionSheet}
-                title={'Selecione o status do agendamento'}
-                options={actionSheetOptions}
-                cancelButtonIndex={2}
-                destructiveButtonIndex={2}
-                tintColor={'#555'}
-                onPress={handleActionSheetPress}
-              />
             </View>
 
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.row}>
-            <Text style={[styles.text, { color: '#F20000' }]}>Apagar agendamento</Text>
+          <TouchableOpacity 
+            style={styles.removeContainer}
+            onPress={handleRemovePress}
+          >
+            <Ionicons name='md-trash' size={22} style={styles.leftIcon} color="#e53935"/>
+            <Text style={[styles.text, { color: '#e53935', fontSize: 20 }]}>Apagar agendamento</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -178,6 +214,10 @@ const styles = StyleSheet.create({
     paddingVertical: 12.5,
   },
 
+  disabled: {
+    color: '#aaa'
+  },
+
   saveContainer: {
     paddingVertical: 10,
     paddingHorizontal: 15,
@@ -195,6 +235,14 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    paddingVertical: 15,
+    paddingHorizontal: 12.5,
+    borderColor: '#aaa',
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+
+  removeContainer: {
+    flexDirection: 'row',
     paddingVertical: 15,
     paddingHorizontal: 12.5,
     borderColor: '#aaa',

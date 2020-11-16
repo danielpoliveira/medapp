@@ -1,23 +1,42 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { View, Text, StyleSheet, Image, TextInput, ScrollView } from 'react-native';
+
+import axios from 'axios';
+import { baseURL } from '../../services/api';
 
 import { Ionicons } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { useStatusBarMode } from '../../contexts/statusBarMode';
 import { useFocusEffect } from '@react-navigation/native';
+
+import { useStatusBarMode } from '../../contexts/statusBarMode';
+import { useAuth } from '../../contexts/auth';
 
 const Login = ({ navigation }: any) => {
   const { changeStatusBarMode, changeStatusBarBackground } = useStatusBarMode();
+  const { signIn } = useAuth();
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   useFocusEffect(
-    React.useCallback(() => {
+    useCallback(() => {
       changeStatusBarMode('light');
       changeStatusBarBackground('#EF694D');
     }, [])
   );
 
-  const handleLogin = () => {
-    //navigation.navigate('BottomTabs');
+  const handleLogin = async () => {
+    if (email && password) {
+      const res = axios.post(`${baseURL}/auth/login`, {
+        email,
+        password,
+      }).then(async res => {
+        //console.log(res.data);
+        signIn(res.data);
+      }).catch(err => {
+        //console.log(err)
+      })
+    }
   }
 
   const handleSignup = () => {
@@ -45,6 +64,9 @@ const Login = ({ navigation }: any) => {
             color="#fff"
           />
           <TextInput
+            value={email}
+            onChangeText={setEmail}
+
             style={styles.textinput}
             placeholder="Email"
             placeholderTextColor="#ffffffcf"
@@ -58,6 +80,11 @@ const Login = ({ navigation }: any) => {
             color="#fff"
           />
           <TextInput
+            value={password}
+            onChangeText={setPassword}
+
+            secureTextEntry
+
             placeholder="Senha"
             style={styles.textinput}
             placeholderTextColor="#ffffffcf"

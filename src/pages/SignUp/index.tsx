@@ -1,13 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, TextInput, ScrollView } from 'react-native';
+
+import axios from 'axios';
+import { baseURL } from '../../services/api';
 
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useStatusBarMode } from '../../contexts/statusBarMode';
 import { useFocusEffect } from '@react-navigation/native';
+import { useAuth } from '../../contexts/auth';
 
 const SignUp = ({ navigation }: any) => {
   const { changeStatusBarMode, changeStatusBarBackground } = useStatusBarMode();
+  const { signIn } = useAuth();
+
+  const [nome, setNome] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   useFocusEffect(
     React.useCallback(() => {
@@ -20,9 +29,23 @@ const SignUp = ({ navigation }: any) => {
     navigation.navigate('Login');
   }
 
+  const handleSignUp = async () => {
+    if (email && nome && password) {
+      const res = axios.post(`${baseURL}/auth/signUp`, {
+        email,
+        nome,
+        password,
+      }).then(async res => {
+        //console.log(res.data);
+        signIn(res.data);
+      }).catch(err => {
+        //console.log(err)
+      })
+    }
+  }
+
   return (
     <View style={styles.container}>
-
       <View style={styles.logoContainer}>
         <Image
           style={styles.logo}
@@ -35,7 +58,6 @@ const SignUp = ({ navigation }: any) => {
       <View style={{
         paddingHorizontal: 20,
       }}>
-
         <View style={styles.textInputContainer}>
           <MaterialIcons
             name="face"
@@ -44,12 +66,13 @@ const SignUp = ({ navigation }: any) => {
             style={styles.icon}
           />
           <TextInput
+            value={nome}
+            onChangeText={setNome}
             style={styles.textinput}
             placeholder="Nome completo"
             placeholderTextColor="#ffffffcf"
           />
         </View>
-
 
         <View style={styles.textInputContainer}>
           <Ionicons
@@ -59,6 +82,8 @@ const SignUp = ({ navigation }: any) => {
             style={styles.icon}
           />
           <TextInput
+            value={email}
+            onChangeText={setEmail}
             style={styles.textinput}
             placeholder="Email"
             placeholderTextColor="#ffffffcf"
@@ -73,13 +98,19 @@ const SignUp = ({ navigation }: any) => {
             style={styles.icon}
           />
           <TextInput
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
             placeholder="Senha"
             style={styles.textinput}
             placeholderTextColor="#ffffffcf"
           />
         </View>
 
-        <TouchableOpacity style={styles.loginButtomContainer}>
+        <TouchableOpacity 
+          onPress={handleSignUp}
+          style={styles.loginButtomContainer}
+        >
           <Text style={styles.loginButtomText}>Criar Conta</Text>
         </TouchableOpacity>
 

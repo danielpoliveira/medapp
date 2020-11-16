@@ -18,8 +18,12 @@ const infoData = [{
   Matricula: "12345"
 }];
 
-const Patient = ({ navigation }: any) => {
+const Patient = ({ navigation, route }: any) => {
   const { changeStatusBarMode, changeStatusBarBackground, } = useStatusBarMode();
+
+  const { patient } = route.params;
+
+  console.log('PACIENTE ---> ', patient);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -56,7 +60,7 @@ const Patient = ({ navigation }: any) => {
       <View style={styles.PerfilContainer}>
         <Image source={{ uri: 'https://avatars1.githubusercontent.com/u/38728374?s=460&u=038545e1533ecb70dd66e646eb51fb48105c379c&v=4' }} style={{ height: 70, width: 70, borderRadius: 100 }} />
         <View style={styles.PerfilContainerText}>
-          <Text style={styles.Name}>Wesley Sousa</Text>
+          <Text style={styles.Name}>{patient.nome}</Text>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Text>21 anos</Text>
             <Text style={{ paddingHorizontal: 3.5, fontSize: 16, }}>•</Text>
@@ -66,71 +70,61 @@ const Patient = ({ navigation }: any) => {
       </View>
 
       <ScrollView style={styles.Info}>
+        <Text style={{ padding: 15, fontWeight: 'bold' }}>Informações Principais</Text>
+        <View style={styles.InfoTextView}>
+          <Text>Data de Nascimento  </Text>
+          <Text>07/12/1999</Text>
+        </View>
+        <View style={styles.line} />
+        <View style={styles.InfoTextView}>
+          <Text>Estado Civil  </Text>
+          <Text>{patient.estado_civil}</Text>
+        </View>
+        <View style={styles.line} />
 
-        <FlatList
-          ItemSeparatorComponent={renderSeparatorView}
-          data={infoData}
-          renderItem={({ item }) => (
-            <>
-              <Text style={{ padding: 15, fontWeight: 'bold' }}>Informações Principais</Text>
-              <View style={styles.InfoTextView}>
-                <Text>Data de Nascimento  </Text>
-                <Text>{item.nascimento}</Text>
-              </View>
-              <View style={styles.line} />
+        <View style={styles.InfoTextView}>
+          <Text>Naturalidade</Text>
+          <Text>{patient.naturalidade}</Text>
+        </View>
+        <View style={styles.line} />
 
-              <View style={styles.InfoTextView}>
-                <Text>Estado Civil  </Text>
-                <Text>{item.estadoCivil}</Text>
-              </View>
-              <View style={styles.line} />
+        <View style={styles.InfoTextView}>
+          <Text>CPF</Text>
+          <Text>{patient.cpf}</Text>
+        </View>
+        <View style={styles.line} />
 
-              <View style={styles.InfoTextView}>
-                <Text>Naturalidade</Text>
-                <Text>{item.Naturalidade}</Text>
-              </View>
-              <View style={styles.line} />
+        <View style={styles.InfoTextView}>
+          <Text>RG</Text>
+          <Text>{patient.rg}</Text>
+        </View>
+        <View style={styles.line} />
 
-              <View style={styles.InfoTextView}>
-                <Text>CPF</Text>
-                <Text>{item.CPF}</Text>
-              </View>
-              <View style={styles.line} />
+        <View style={styles.InfoTextView}>
+          <Text>Tipo Sanguineo</Text>
+          <Text>{patient.tipo_sanguineo}</Text>
+        </View>
+        <View style={styles.line} />
 
-              <View style={styles.InfoTextView}>
-                <Text>RG</Text>
-                <Text>{item.RG}</Text>
-              </View>
-              <View style={styles.line} />
+        <Text style={{ padding: 15, fontWeight: 'bold' }}>Plano de Saúde</Text>
 
-              <View style={styles.InfoTextView}>
-                <Text>Fator Sanguineo</Text>
-                <Text>{item.FatorSanguineo}</Text>
-              </View>
-              <View style={styles.line} />
+        <View style={styles.InfoTextView}>
+          <Text>Convenio</Text>
+          <Text>{patient.convenio}</Text>
+        </View>
+        <View style={styles.line} />
 
-              <Text style={{ padding: 15, fontWeight: 'bold' }}>Plano de Saúde</Text>
+        <View style={styles.InfoTextView}>
+          <Text>Plano</Text>
+          <Text>{patient.plano}</Text>
+        </View>
+        <View style={styles.line} />
 
-              <View style={styles.InfoTextView}>
-                <Text>Convenio</Text>
-                <Text>{item.Convenio}</Text>
-              </View>
-              <View style={styles.line} />
-
-              <View style={styles.InfoTextView}>
-                <Text>Plano</Text>
-                <Text>{item.Plano}</Text>
-              </View>
-              <View style={styles.line} />
-
-              <View style={styles.InfoTextView}>
-                <Text>Matricula</Text>
-                <Text>{item.Matricula}</Text>
-              </View>
-              <View style={styles.line} />
-            </>
-          )}
-        />
+        <View style={styles.InfoTextView}>
+          <Text>Matricula</Text>
+          <Text>{patient.id}</Text>
+        </View>
+        <View style={styles.line} />
       </ScrollView>
     </View >
   )

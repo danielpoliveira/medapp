@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Text, View, FlatList, StyleSheet, TextInput, } from "react-native";
 import { Octicons } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -6,6 +6,8 @@ import { useFocusEffect } from '@react-navigation/native';
 
 import { useStatusBarMode } from '../../contexts/statusBarMode';
 import ListSelector from '../../components/ListSelector';
+
+import api from '../../services/api';
 
 const data = [
   'Pooja Mills',
@@ -126,6 +128,10 @@ const Patients = ({ navigation }: any) => {
       changeStatusBarBackground('#FFFFFF');
     }, [])
   );
+
+  useEffect(() => {
+    
+  }, []);
 
   return (
     <React.Fragment>

@@ -1,13 +1,22 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, ScrollView, TouchableOpacity, Platform, StatusBar } from "react-native";
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, View, Text, FlatList, TouchableOpacity, } from "react-native";
 import CalendarStrip from 'react-native-calendar-strip';
-import { Ionicons } from '@expo/vector-icons';
 
-import Accordian from '../../components/Accordion';
+import api from '../../services/api';
+
 import { useFocusEffect } from '@react-navigation/native';
 import { useStatusBarMode } from '../../contexts/statusBarMode';
 
+import moment from 'moment';
 import 'moment/locale/pt-br';
+
+import { Ionicons } from '@expo/vector-icons';
+import { Colors } from '../../components/Accordion/Colors';
+import CheckIcon from '../../components/CheckIcon';
+import Loader from '../../components/Loader';
+import EmptyDateComponent from '../../components/EmptyDateComponent';
+
+moment.locale();
 
 const daySelectionAnimation = {
   type: 'background',
@@ -15,88 +24,92 @@ const daySelectionAnimation = {
   highlightColor: '#FFFFFFCC'
 } as TDaySelectionAnimation;
 
-const data = [{
-  id: 1,
-  title: 'Dr. Daniel Oliveira',
-  data: [
-    { key: '08:00 José Luiz Oliveira Barroso', value: false },
-    { key: '08:30 Roberto Pereira dos Santos', value: false },
-    { key: '09:00 Luiz Miranda Resende', value: false },
-    { key: '09:30 Mariana Silveira dos Anjos', value: false },
-  ]
-},
-{
-  id: 2,
-  title: 'Dra. Anna Sophia',
-  data: [
-    { key: '10:00 Adriano Byrne Azevedo', value: false },
-    { key: '10:30 Maria Luiza Mendes', value: false },
-    { key: '11:00 Pamela Amorin Gouveia', value: false },
-    { key: '11:30 -- intervalo --', value: false }
-  ]
-},
-{
-  id: 3,
-  title: 'Dr. David',
-  data: [
-    { key: '13:00 Bruna Garcia da Silva', value: false },
-    { key: '13:30 Alexandre Moura Filho', value: false },
-  ]
-},
-{
-  id: 4,
-  title: 'Dr. Wesley',
-  data: [
-    { key: 'Choco Lava Cake', value: false },
-    { key: 'Gulabjamun', value: false },
-    { key: 'Kalajamun', value: false },
-    { key: 'Jalebi', value: false }
-  ]
-}];
+const RenderItem = ({ item, index, navigation }: any) => {
+  const { patient } = item;
 
-const Shedule = ({ navigation }: any) => {
+  return (
+    <View>
+      <TouchableOpacity
+        style={[styles.childRow, styles.button,]}
+        onPress={() => navigation.navigate('Shedule', {
+          item
+        })}
+      >
+        <View style={styles.childRow}>
+          <Text style={[styles.itemInActive, { marginRight: 10 }]}>{moment(item.datetime).format('HH:MM A')}</Text>
+          <Text style={[styles.itemInActive]}>{patient.nome}</Text>
+        </View>
+
+        <CheckIcon status={item.status} />
+      </TouchableOpacity>
+      <View style={styles.childHr} />
+    </View>
+  );
+}
+
+const Shedules = ({ navigation, route }: any) => {
   const { changeStatusBarMode, changeStatusBarBackground } = useStatusBarMode();
-  const [menu, setMenu] = useState(data);
+  const { date: _date } = route.params ?? { date: null }
+
+  const [dataUsers, setDataUsers] = useState([]);
+  const [date, setDate] = useState(_date || moment());
+  const [loading, setLoading] = useState(true);
+
+  const handleDatePress = (date: Date | any) => {
+    setLoading(true);
+
+    setDate(moment(date));
+
+    loadData(date);
+  }
+
+  async function loadData(_date = undefined) {
+    const auxDate = _date ?? date;
+
+    await api.get('/user/agendamentos/all/', {
+      params: {
+        data: moment(auxDate).format('YYYY-MM-DD'),
+      },
+    }).then(res => {
+      setDataUsers(res.data);
+
+      setLoading(false);
+    });
+  }
+
+  useFocusEffect(
+    React.useCallback(() => {
+      changeStatusBarMode('light');
+      changeStatusBarBackground('#EF694D');
+
+      loadData();
+    }, [date])
+  );
+
+  const handleAddPressed = () => {
+    navigation.navigate('NewShedule');
+  }
 
   const markedDatesArray = [{
-    date: Date.now(),
+    date,
     dots: [{
       color: '#FFF',
       selectedColor: '#333',
     }],
   }];
 
-  useFocusEffect(
-    React.useCallback(() => {
-      changeStatusBarMode('light');
-      changeStatusBarBackground('#EF694D');
-    }, [])
-  );
-
-  const renderAccordians = () => {
-    const items = [];
-    let item;
-    for (item of menu) {
-      items.push(
-        <Accordian title={item.title} data={item.data} key={item.id} navigation={navigation} />
-      );
-    }
-    return items;
-  }
-
-  const handleAddPressed = () => { 
-    navigation.navigate('NewShedule');
-  }
 
   return (
     <React.Fragment>
+      <Loader loading={loading} />
       <View style={styles.container}>
         <CalendarStrip
           daySelectionAnimation={daySelectionAnimation}
+
           markedDates={markedDatesArray}
           leftSelector={[]}
           rightSelector={[]}
-          onDateSelected={() => { }}
+          onDateSelected={handleDatePress}
           useNativeDriver={true}
           scrollable
           highlightDateNameStyle={{ color: '#333' }}
@@ -109,9 +122,15 @@ const Shedule = ({ navigation }: any) => {
           iconContainer={{ flex: 0.025 }}
         />
 
-        <ScrollView>
-          {renderAccordians()}
-        </ScrollView>
+        <FlatList
+          keyExtractor={(props: any) => props.id.toString()}
+          data={dataUsers}
+          renderItem={props => <RenderItem {...props} navigation={navigation} />}
+          contentContainerStyle={
+            !dataUsers.length && styles.containerEmptyView
+          }
+          ListEmptyComponent={<EmptyDateComponent date={date} />}
+        />
       </View>
 
       <View style={{ position: 'absolute', bottom: 20, right: 20, zIndex: 5 }}>
@@ -126,6 +145,27 @@ const Shedule = ({ navigation }: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+
+  childRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    backgroundColor: Colors.GRAY,
+  },
+
+  itemInActive: {
+    fontSize: 15,
+    color: Colors.DARKGRAY,
+  },
+
+  button: {
+    width: '100%',
+    height: 54,
+    //backgroundColor: 'red',
+    alignItems: 'center',
+    paddingLeft: 35,
+    paddingRight: 35,
+    fontSize: 12,
   },
 
   addShedule: {
@@ -159,9 +199,17 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
     shadowRadius: 3,
     elevation: 10,
+  },
+
+  childHr: {
+    height: 1,
+    backgroundColor: Colors.LIGHTGRAY,
+    width: '100%',
+  },
+
+  containerEmptyView: {
+    justifyContent: 'center', alignItems: 'center', height: '100%'
   }
-
-
 })
 
-export default Shedule;
+export default Shedules;

@@ -5,9 +5,10 @@ import { AntDesign } from '@expo/vector-icons';
 import { useStatusBarMode } from '../../contexts/statusBarMode';
 import { useFocusEffect } from '@react-navigation/native';
 
+import api, { baseURL } from '../../services/api';
+
 import moment from 'moment';
 import 'moment/locale/pt-br';
-
 moment.locale('pt-br');
 
 const Patient = ({ navigation, route }: any) => {
@@ -38,7 +39,12 @@ const Patient = ({ navigation, route }: any) => {
   return (
     <View style={styles.container}>
       <View style={styles.PerfilContainer}>
-        <Image source={{ uri: 'https://avatars1.githubusercontent.com/u/38728374?s=460&u=038545e1533ecb70dd66e646eb51fb48105c379c&v=4' }} style={{ height: 70, width: 70, borderRadius: 100 }} />
+        <Image
+          source={{
+            uri: `${baseURL}/images/get/${patient.avatar_uri}`
+          }}
+          style={styles.avatar} 
+        />
         <View style={styles.PerfilContainerText}>
           <Text style={styles.Name}>{patient.nome}</Text>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -114,6 +120,12 @@ const Patient = ({ navigation, route }: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+
+  avatar: {
+    height: 70,
+    width: 70,
+    borderRadius: 70,
   },
 
   renderContainer: {

@@ -1,7 +1,11 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, Platform, Modal } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, Platform, Modal, Image } from 'react-native';
 import { HeaderBackButton } from '@react-navigation/stack';
 import { Entypo, FontAwesome5, Fontisto, Ionicons, MaterialCommunityIcons, MaterialIcons, } from '@expo/vector-icons';
+
+const icon = (name: string) => <Ionicons key={name} name={name} size={24} />;
+
+import * as ImagePicker from 'expo-image-picker';
 
 import moment from 'moment';
 import 'moment/locale/pt-br';
@@ -14,7 +18,6 @@ import { CapitalizeFirstLetter } from '../../utils/strings';
 import api from '../../services/api';
 
 moment.locale('pt-br');
-
 
 const NewPatient = ({ navigation }: any) => {
   const { showActionSheetWithOptions } = useActionSheet();
@@ -29,6 +32,12 @@ const NewPatient = ({ navigation }: any) => {
 
   const tipoSanguineoOptions = [
     'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', 'cancelar'
+  ];
+
+  const picOptions = [
+    'Tirar uma nova foto',
+    'Escolher da galeria',
+    'Cancelar',
   ];
 
   const [date, setDate] = useState(new Date(Date.now()));
@@ -52,6 +61,8 @@ const NewPatient = ({ navigation }: any) => {
   const [convenio, setConvenio] = useState('');
   const [planoSaude, setPlanoSaude] = useState('');
 
+  const [image, setImage] = useState<any>('');
+
   const [save, setSave] = useState(false);
 
   useLayoutEffect(() => {
@@ -59,7 +70,30 @@ const NewPatient = ({ navigation }: any) => {
       headerLeft: (props: any) => <HeaderBackButton {...props} label="Voltar" />,
       headerRight: () => <HeaderRightButtom />,
     });
-  }, [navigation, save]);
+  }, [navigation, save, image]);
+
+  useEffect(() => {
+    async function loadCameraRollPermitions() {
+      if (Platform.OS !== 'web') {
+        const { status } = await ImagePicker.requestCameraRollPermissionsAsync();
+        if (status !== 'granted') {
+          alert('Descule, precisamos de permissões de acesso da biclioteca da câmera para fazer isso funcionar!');
+        }
+      }
+    };
+
+    async function loadCameraPermitions() {
+      if (Platform.OS !== 'web') {
+        const { status } = await ImagePicker.requestCameraPermissionsAsync();
+        if (status !== 'granted') {
+          alert('Descule, precisamos de permissões de acesso da câmera para fazer isso funcionar!');
+        }
+      }
+    };
+
+    loadCameraPermitions()
+    loadCameraRollPermitions();
+  }, []);
 
   useEffect(() => {
     if (
@@ -92,6 +126,32 @@ const NewPatient = ({ navigation }: any) => {
       planoSaude,
     ]);
 
+  const showPicOnGalery = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    }).then(res => {
+      if (!res.cancelled) {
+        setImage(res);
+      }
+    });
+  }
+
+  const showPicOnCamera = async () => {
+    let result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    }).then(res => {      
+      if (!res.cancelled) {
+        setImage(res);
+      }
+    });
+  }
+
   const onChange = (event: any, selectedDate: any) => {
     const currentDate = selectedDate || date;
     setShow(Platform.OS === 'ios');
@@ -111,25 +171,37 @@ const NewPatient = ({ navigation }: any) => {
 
   async function handleSavePress() {
     if (save) {
-      const data = {
-        nome,
-        sexo: sexoOptions[selectSexo],
-        cpf,
-        data_nascimento: moment(dateText).format('YYYY-MM-DD'),
-        rg,
-        naturalidade,
-        estado_civil: estadoCivilOptions[selectEstadoCivil],
-        tipo_sanguineo: tipoSanguineoOptions[selectTipoSanguineo],
-        celular,
-        whatsapp,
-        convenio,
-        plano: planoSaude,
+      const auxData = new FormData();
+
+      auxData.append('nome', nome);
+      auxData.append('sexo', sexoOptions[selectSexo]);
+      auxData.append('data_nascimento', moment(dateText).format('YYYY-MM-DD'));
+      auxData.append('cpf', cpf);
+      auxData.append('rg', rg);
+      auxData.append('naturalidade', naturalidade);
+      auxData.append('estado_civil', estadoCivilOptions[selectEstadoCivil]);
+      auxData.append('tipo_sanguineo', tipoSanguineoOptions[selectTipoSanguineo]);
+      auxData.append('celular', celular);
+      auxData.append('whatsapp', whatsapp);
+      auxData.append('convenio', convenio);
+      auxData.append('plano', planoSaude);
+
+      auxData.append('photo', {
+        name: image.uri.split('/').pop(),
+        uri: image.uri,
+        type: 'image/jpeg',
+      });
+      
+      const config = {
+        headers: {
+          'Content-Type': 'multipart/form-data; charset=utf-8;'
+        }
       }
 
-      const res = await api.post('/user/pacientes/new', data)
-        .then(res => {
-          navigation.navigate('Shedules');
-        });
+      const res = await api.post('/user/pacientes/new', auxData, config)
+      .then(res => {
+        navigation.navigate('Shedules');
+      });
     }
   }
 
@@ -142,6 +214,27 @@ const NewPatient = ({ navigation }: any) => {
       <Text style={[styles.saveText, !save && styles.saveDisabled]}>salvar</Text>
     </TouchableOpacity>
   );
+
+  const showPicActionSheet = () => {
+
+    const icons = [icon('ios-camera'), icon('md-photos'), icon('md-close')]
+
+    showActionSheetWithOptions({
+      options: picOptions,
+      icons,
+      cancelButtonIndex: 2,
+      title: 'Selecione o modo de captura',
+    }, (index: number) => {
+
+      if (index == 0) {
+        showPicOnCamera();
+      } else if (index === 1) {
+        showPicOnGalery();
+      }
+
+    });
+  }
+
 
   const showSexoActionSheet = () => {
     showActionSheetWithOptions({
@@ -174,6 +267,10 @@ const NewPatient = ({ navigation }: any) => {
 
       setSelectTipoSanguineo(index !== 8 ? index : '');
     });
+  }
+
+  const handleChooseAvatarPress = () => {
+    showPicActionSheet();
   }
 
   return (
@@ -215,8 +312,21 @@ const NewPatient = ({ navigation }: any) => {
 
       <ScrollView>
         <View style={{ flexDirection: 'column', alignItems: 'center' }} >
-          <View style={{ width: 80, height: 80, backgroundColor: 'gray', marginTop: 20, borderRadius: 50 }} />
-          <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#EF694D', marginTop: 10, }}>Adicionar Foto</Text>
+          {image ?
+            <Image style={styles.avatar} source={{ uri: image.uri }} />
+            :
+            <View style={styles.avatar} />
+          }
+
+          <TouchableOpacity
+            onPress={handleChooseAvatarPress}
+            style={{
+              marginTop: 10,
+              padding: 10,
+            }}
+          >
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#EF694D', }}>Adicionar Foto</Text>
+          </TouchableOpacity>
         </View>
 
         <View style={{ paddingTop: 30 }}>
@@ -450,6 +560,14 @@ const NewPatient = ({ navigation }: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+
+  avatar: {
+    width: 80,
+    height: 80,
+    backgroundColor: 'gray',
+    marginTop: 20,
+    borderRadius: 50
   },
 
   inputView: {

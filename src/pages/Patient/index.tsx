@@ -1,11 +1,11 @@
 import React, { useLayoutEffect } from 'react';
-import { Text, View, StyleSheet, Image, FlatList, ScrollView, TouchableOpacity, ImageProps } from "react-native";
+import { Text, View, StyleSheet, Image, FlatList, ScrollView, TouchableOpacity, ImageProps, Alert, Linking } from "react-native";
 import { HeaderBackButton } from '@react-navigation/stack';
 import { AntDesign } from '@expo/vector-icons';
 import { useStatusBarMode } from '../../contexts/statusBarMode';
 import { useFocusEffect } from '@react-navigation/native';
 
-import api, { baseURL } from '../../services/api';
+import { baseURL } from '../../services/api';
 
 import moment from 'moment';
 import 'moment/locale/pt-br';
@@ -30,8 +30,10 @@ const Patient = ({ navigation, route }: any) => {
     }, [])
   );
 
+  const handlerPrintPress = async () => {}
+
   const HeaderRightButtom = () => (
-    <TouchableOpacity onPress={() => { }} style={styles.printContainer}>
+    <TouchableOpacity onPress={handlerPrintPress} style={styles.printContainer}>
       <AntDesign name="printer" size={22} />
     </TouchableOpacity>
   );
@@ -43,7 +45,7 @@ const Patient = ({ navigation, route }: any) => {
           source={{
             uri: `${baseURL}/images/get/${patient.avatar_uri}`
           }}
-          style={styles.avatar} 
+          style={styles.avatar}
         />
         <View style={styles.PerfilContainerText}>
           <Text style={styles.Name}>{patient.nome}</Text>
@@ -126,6 +128,7 @@ const styles = StyleSheet.create({
     height: 70,
     width: 70,
     borderRadius: 70,
+    backgroundColor: '#ccc'
   },
 
   renderContainer: {

@@ -1,37 +1,28 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, TextInput, ScrollView, TouchableOpacity } from 'react-native';
-
-import axios from 'axios';
-import { baseURL } from '../../services/api';
-
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { useAuth } from '../../contexts/auth';
-
+import { View, Text, TextInput, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
 import CustomStatusBar from '../../components/CustomStatusBar';
 
-const SignUp = ({ navigation }: any) => {
+import { Ionicons, } from '@expo/vector-icons';
+import { useAuth } from '../../contexts/auth';
+
+const ForgotPass = ({ navigation }: any) => {
   const { signIn } = useAuth();
 
-  const [nome, setNome] = useState('');
+  const [authKey, setAuthKey] = useState('');
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+
+  const [code, setCode] = useState(false);
 
   const handleLogin = () => {
     navigation.navigate('Login');
   }
 
-  const handleSignUp = async () => {
-    if (email && nome && password) {
-      const res = axios.post(`${baseURL}/auth/signUp`, {
-        email,
-        nome,
-        password,
-      }).then(async res => {
-        signIn(res.data);
-      }).catch(err => {
-        //console.log(err)
-      })
-    }
+  const handleSignUp = () => {
+    navigation.navigate('SignUp');
+  }
+
+  const handleForgot = async () => {
+    setCode(true)
   }
 
   return (
@@ -48,25 +39,7 @@ const SignUp = ({ navigation }: any) => {
             />
           </View>
 
-          <View style={{
-            paddingHorizontal: 20,
-          }}>
-            <View style={styles.textInputContainer}>
-              <MaterialIcons
-                name="face"
-                size={25}
-                color="#fff"
-                style={styles.icon}
-              />
-              <TextInput
-                value={nome}
-                onChangeText={setNome}
-                style={styles.textinput}
-                placeholder="Nome completo"
-                placeholderTextColor="#ffffffcf"
-              />
-            </View>
-
+          <View style={{ paddingHorizontal: 20 }}>
             <View style={styles.textInputContainer}>
               <Ionicons
                 name="md-mail"
@@ -82,33 +55,47 @@ const SignUp = ({ navigation }: any) => {
                 placeholderTextColor="#ffffffcf"
               />
             </View>
+            {code &&
+              (<View style={styles.textInputContainer}>
+                <Ionicons
+                  name="md-lock"
+                  size={25}
+                  color="#fff"
+                  style={styles.icon}
+                />
+                <TextInput
+                  value={authKey}
+                  onChangeText={setAuthKey}
+                  style={styles.textinput}
+                  placeholder="Código de autenticação"
+                  placeholderTextColor="#ffffffcf"
+                />
+              </View>
+              )
+            }
 
-            <View style={styles.textInputContainer}>
-              <Ionicons
-                name="md-key"
-                size={25}
-                color="#fff"
-                style={styles.icon}
-              />
-              <TextInput
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-                placeholder="Senha"
-                style={styles.textinput}
-                placeholderTextColor="#ffffffcf"
-              />
+            <TouchableOpacity
+              onPress={handleForgot}
+              style={styles.loginButtomContainer}
+            >
+              <Text style={styles.loginButtomText}>Enviar link para o email</Text>
+            </TouchableOpacity>
+
+            <View style={styles.orContainer}>
+              <View style={styles.orLine} />
+              <Text style={styles.orText}>OU</Text>
+              <View style={styles.orLine} />
             </View>
 
             <TouchableOpacity
-              onPress={handleSignUp}
-              style={styles.loginButtomContainer}
+              onPress={handleLogin}
+              style={styles.forgotPasswordContainer}
             >
-              <Text style={styles.loginButtomText}>Criar Conta</Text>
+              <Text style={styles.forgotPasswordText}>Voltar ao login</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              onPress={handleLogin}
+              onPress={handleSignUp}
               style={styles.signUpButtomContainer}>
               <Text
                 style={styles.signUpButtomText}
@@ -124,7 +111,6 @@ const SignUp = ({ navigation }: any) => {
 
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {
@@ -162,13 +148,22 @@ const styles = StyleSheet.create({
   },
 
   forgotPasswordContainer: {
-    alignItems: 'flex-end',
-    paddingVertical: 10,
+    alignItems: 'center',
+
+    borderColor: '#ffffffcf',
+    borderWidth: StyleSheet.hairlineWidth,
+    //backgroundColor: '#78909c',
+
+    borderRadius: 20,
+    padding: 20,
+    marginBottom: 10,
   },
 
   forgotPasswordText: {
     fontSize: 18,
-    color: '#FFFFFFaf'
+    fontWeight: 'bold',
+    color: '#FFF',
+
   },
 
   loginButtomContainer: {
@@ -187,10 +182,10 @@ const styles = StyleSheet.create({
   },
 
   signUpButtomContainer: {
-    borderColor: '#ffffffcf',
-    borderWidth: StyleSheet.hairlineWidth,
+    //borderColor: '#ffffffcf',
+    //borderWidth: StyleSheet.hairlineWidth,
     borderRadius: 15,
-    marginTop: 20,
+    //marginTop: 10,
     padding: 20,
     alignItems: 'center',
     justifyContent: 'center',
@@ -201,6 +196,29 @@ const styles = StyleSheet.create({
     color: '#FFFFFF'
   },
 
+  orContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+
+    marginVertical: 10,
+    padding: 15,
+  },
+
+  orLine: {
+    width: '35%',
+    height: StyleSheet.hairlineWidth,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderColor: '#FFF',
+  },
+  orText: {
+    fontSize: 18,
+    marginHorizontal: 20,
+    color: '#FFF'
+  }
+
 });
 
-export default SignUp;
+
+
+export default ForgotPass;

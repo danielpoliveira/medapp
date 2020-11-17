@@ -7,9 +7,9 @@ import axios from 'axios';
 import { baseURL } from '../../services/api';
 
 import { useAuth } from '../../contexts/auth';
-import { useStatusBarMode } from '../../contexts/statusBarMode';
 import { useDropDown } from '../../contexts/dropDown';
 import CustomStatusBar from '../../components/CustomStatusBar';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const Login = ({ navigation }: any) => {
   const { signIn } = useAuth();
@@ -24,6 +24,10 @@ const Login = ({ navigation }: any) => {
       ref.current.alertWithType("success", "Log in successfull.", "asdasd");
     }, [])
   );
+
+  const handleForgotPass = () => {
+    navigation.navigate('ForgotPass');
+  }
 
   const handleLogin = async () => {
     if (email && password) {
@@ -43,78 +47,83 @@ const Login = ({ navigation }: any) => {
   }
 
   return (
-    <>
+    <React.Fragment>
       <CustomStatusBar background="#EF694D" mode="light" />
       <View style={styles.container}>
+        <ScrollView>
 
-        <View style={styles.logoContainer}>
-          <Image
-            style={styles.logo}
-            source={{
-              uri: 'https://www.onlinelogomaker.com/blog/wp-content/uploads/2017/07/medical-logo.jpg'
-            }}
-          />
-        </View>
-
-        <View style={{
-          paddingHorizontal: 20,
-        }}>
-          <View style={styles.textInputContainer}>
-            <Ionicons
-              name="md-mail"
-              size={25}
-              color="#fff"
-            />
-            <TextInput
-              value={email}
-              onChangeText={setEmail}
-
-              style={styles.textinput}
-              placeholder="Email"
-              placeholderTextColor="#ffffffcf"
+          <View style={styles.logoContainer}>
+            <Image
+              style={styles.logo}
+              source={{
+                uri: 'https://www.onlinelogomaker.com/blog/wp-content/uploads/2017/07/medical-logo.jpg'
+              }}
             />
           </View>
 
-          <View style={styles.textInputContainer}>
-            <Ionicons
-              name="md-key"
-              size={25}
-              color="#fff"
-            />
-            <TextInput
-              value={password}
-              onChangeText={setPassword}
+          <View style={{
+            paddingHorizontal: 20,
+          }}>
+            <View style={styles.textInputContainer}>
+              <Ionicons
+                name="md-mail"
+                size={25}
+                color="#fff"
+              />
+              <TextInput
+                value={email}
+                onChangeText={setEmail}
 
-              secureTextEntry
+                style={styles.textinput}
+                placeholder="Email"
+                placeholderTextColor="#ffffffcf"
+              />
+            </View>
 
-              placeholder="Senha"
-              style={styles.textinput}
-              placeholderTextColor="#ffffffcf"
-            />
+            <View style={styles.textInputContainer}>
+              <Ionicons
+                name="md-key"
+                size={25}
+                color="#fff"
+              />
+              <TextInput
+                value={password}
+                onChangeText={setPassword}
+
+                secureTextEntry
+
+                placeholder="Senha"
+                style={styles.textinput}
+                placeholderTextColor="#ffffffcf"
+              />
+            </View>
+
+            <TouchableOpacity 
+              onPress={handleForgotPass}
+              style={styles.forgotPasswordContainer}
+            >
+              <Text style={styles.forgotPasswordText}>Esqueceu sua senha?</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={handleLogin}
+              style={styles.loginButtomContainer}
+            >
+              <Text style={styles.loginButtomText}>Entrar</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={handleSignup}
+              style={styles.signUpButtomContainer}>
+              <Text
+                style={styles.signUpButtomText}
+              >Não tem uma conta? <Text style={{ fontWeight: 'bold' }}> Cadastre-se!</Text>
+              </Text>
+            </TouchableOpacity>
           </View>
-
-          <TouchableOpacity style={styles.forgotPasswordContainer}>
-            <Text style={styles.forgotPasswordText}>Esqueceu sua senha?</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={handleLogin}
-            style={styles.loginButtomContainer}
-          >
-            <Text style={styles.loginButtomText}>Entrar</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={handleSignup}
-            style={styles.signUpButtomContainer}>
-            <Text
-              style={styles.signUpButtomText}
-            >Não tem uma conta? <Text style={{ fontWeight: 'bold' }}> Cadastre-se!</Text>
-            </Text>
-          </TouchableOpacity>
-        </View>
+        </ScrollView>
       </View>
-    </>
+    </React.Fragment>
   );
 }
 

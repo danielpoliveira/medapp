@@ -32,7 +32,7 @@ const Patient = ({ navigation, route }: any) => {
 
   return (
     <React.Fragment>
-      <CustomStatusBar background="#FFFFFF" mode="dark" />
+      <CustomStatusBar background="#FFFFFF" mode="dark" noHeight/> 
 
       <View style={styles.container}>
         <View style={styles.PerfilContainer}>
@@ -146,6 +146,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingVertical: 10,
+    //backgroundColor: 'red'
   },
 
   PerfilContainerText: {

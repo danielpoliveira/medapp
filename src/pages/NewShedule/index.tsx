@@ -32,8 +32,6 @@ import CustomStatusBar from '../../components/CustomStatusBar';
 moment.locale('pt-br');
 
 const NewShedule = ({ navigation }: any) => {
-  const { changeStatusBarMode, changeStatusBarBackground } = useStatusBarMode();
-
   const [date, setDate] = useState(new Date(Date.now()));
   const [mode, setMode] = useState<IOSMode>('date');
   const [show, setShow] = useState(false);

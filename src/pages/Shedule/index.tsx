@@ -97,7 +97,7 @@ const Shedule = ({ navigation, route }: any) => {
 
   return (
     <React.Fragment>
-      <CustomStatusBar background="#FFFFFF" mode="dark" />
+      <CustomStatusBar background="#FFFFFF" mode="dark" noHeight/>
       <ScrollView>
         <View style={styles.container}>
           <View style={styles.row}>

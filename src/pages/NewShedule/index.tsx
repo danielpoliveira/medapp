@@ -19,19 +19,23 @@ import {
 import { useFocusEffect } from '@react-navigation/native';
 import { HeaderBackButton } from '@react-navigation/stack';
 import { Fontisto, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 import moment from 'moment';
 import 'moment/locale/pt-br';
 
-import DateTimePicker from '@react-native-community/datetimepicker';
+import { useDropDown } from '../../contexts/dropDown';
 
 import ListSelector from '../../components/ListSelector';
-import api from '../../services/api';
 import CustomStatusBar from '../../components/CustomStatusBar';
+
+import api from '../../services/api';
 
 moment.locale('pt-br');
 
 const NewShedule = ({ navigation }: any) => {
+  const { ref } = useDropDown();
+
   const [date, setDate] = useState(new Date(Date.now()));
   const [mode, setMode] = useState<IOSMode>('date');
   const [show, setShow] = useState(false);
@@ -80,22 +84,35 @@ const NewShedule = ({ navigation }: any) => {
       !_.isEmpty(medicSelected) &&
       dateText &&
       timeText
-    ) 
+    )
       setSave(true);
 
   }, [patientSelected, medicSelected, dateText, timeText]);
 
-
   async function handleSavePress() {
     if (save) {
       const datetime = moment(moment(dateText).format('YYYY-MM-DD') + ' ' + moment(timeText).format('HH:mm:ss'))
-      
+
       await api.post('/user/agendamentos/new/', {
         paciente: patientSelected?.id,
         medico: medicSelected?.id,
         datetime: moment(datetime).format(),
       }).then(res => {
+        ref
+          .current
+          .alertWithType("success", "Sucesso!", 'Agendamento criado com sucesso');
+
         navigation.navigate('Shedules');
+      }).catch(err => {
+        const msg =
+          err.response &&
+            err.response.data ?
+            err.response.data
+            :
+            undefined;
+        ref
+          .current
+          .alertWithType('error', "Erro!", msg.errors);
       });
     }
   }
@@ -106,7 +123,7 @@ const NewShedule = ({ navigation }: any) => {
       onPress={handleSavePress}
       style={styles.saveContainer}
     >
-      <Text style={[styles.saveText, !save && {color:'#ccc'}]}>Save</Text>
+      <Text style={[styles.saveText, !save && { color: '#ccc' }]}>Save</Text>
     </TouchableOpacity>
   );
 
@@ -156,7 +173,7 @@ const NewShedule = ({ navigation }: any) => {
 
   return (
     <React.Fragment>
-      <CustomStatusBar background="#FFFFFF" mode="dark" />
+      <CustomStatusBar background="#FFFFFF" mode="dark" noHeight />
       <ListSelector
         mode="selector"
         data={patient}
@@ -216,7 +233,7 @@ const NewShedule = ({ navigation }: any) => {
             </View>
 
             <View style={styles.column}>
-              <Text style={styles.text}>{dateText? moment(dateText).format('DD/MM/YYYY') : 'Selecione a data'}</Text>
+              <Text style={styles.text}>{dateText ? moment(dateText).format('DD/MM/YYYY') : 'Selecione a data'}</Text>
               <Ionicons name='ios-arrow-forward' size={20} style={styles.rightIcon} />
             </View>
           </TouchableOpacity>
@@ -228,7 +245,7 @@ const NewShedule = ({ navigation }: any) => {
             </View>
 
             <View style={styles.column}>
-              <Text style={styles.text}>{timeText? moment(timeText).format('hh:mm A') : 'Selecione a hora'}</Text>
+              <Text style={styles.text}>{timeText ? moment(timeText).format('hh:mm A') : 'Selecione a hora'}</Text>
               <Ionicons name='ios-arrow-forward' size={20} style={styles.rightIcon} />
             </View>
           </TouchableOpacity>

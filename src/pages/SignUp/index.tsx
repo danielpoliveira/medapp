@@ -6,11 +6,13 @@ import { baseURL } from '../../services/api';
 
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useAuth } from '../../contexts/auth';
+import { useDropDown } from '../../contexts/dropDown';
 
 import CustomStatusBar from '../../components/CustomStatusBar';
 
 const SignUp = ({ navigation }: any) => {
   const { signIn } = useAuth();
+  const { ref } = useDropDown();
 
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
@@ -27,10 +29,26 @@ const SignUp = ({ navigation }: any) => {
         nome,
         password,
       }).then(async res => {
+        ref
+          .current
+          .alertWithType("success", "Sucesso!", 'Conta criada com sucesso');
+
         signIn(res.data);
       }).catch(err => {
-        //console.log(err)
+        const msg =
+          err.response &&
+            err.response.data ?
+            err.response.data
+            :
+            undefined;
+        ref
+          .current
+          .alertWithType('error', "Erro!", msg.errors);
       })
+    } else {
+      ref
+        .current
+        .alertWithType('error', "Erro!", 'nome, email, ou senha vazios!');
     }
   }
 

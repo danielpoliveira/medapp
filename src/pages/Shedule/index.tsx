@@ -16,17 +16,17 @@ import { useActionSheet } from '@expo/react-native-action-sheet'
 import { HeaderBackButton } from '@react-navigation/stack';
 import { Ionicons, Fontisto } from '@expo/vector-icons';
 
+import { useDropDown } from '../../contexts/dropDown';
+
 import moment from 'moment';
 moment.locale('pt-br');
 
-import { useStatusBarMode } from '../../contexts/statusBarMode';
 import api from '../../services/api';
 import CustomStatusBar from '../../components/CustomStatusBar';
 
 const Shedule = ({ navigation, route }: any) => {
-  const { changeStatusBarMode, changeStatusBarBackground } = useStatusBarMode();
   const { showActionSheetWithOptions } = useActionSheet();
-
+  const { ref } = useDropDown();
   const { item } = route.params;
 
   const [date, setDate] = useState(moment(item.datetime || Date.now()));
@@ -71,7 +71,21 @@ const Shedule = ({ navigation, route }: any) => {
         id: item.id,
         status: actionSheetOptions[selectActionSheet],
       }).then(res => {
+        ref
+          .current
+          .alertWithType("success", "Sucesso!", 'Agendamento editado!');
+
         navigation.navigate('Shedules', { date });
+      }).catch(err => {
+        const msg =
+          err.response &&
+            err.response.data ?
+            err.response.data
+            :
+            undefined;
+        ref
+          .current
+          .alertWithType('error', "Erro!", msg.errors);
       })
     }
   }
@@ -79,7 +93,22 @@ const Shedule = ({ navigation, route }: any) => {
   async function handleRemovePress() {
     const res = await api.delete(`/user/agendamentos/remove/${item.id}`)
       .then(res => {
+        ref
+          .current
+          .alertWithType("success", "Sucesso!", 'Agendamento removido com sucesso!');
+
         navigation.navigate('Shedules', { date });
+      })
+      .catch(err => {
+        const msg =
+          err.response &&
+            err.response.data ?
+            err.response.data
+            :
+            undefined;
+        ref
+          .current
+          .alertWithType('error', "Erro!", msg.errors);
       });
   }
 
@@ -97,7 +126,7 @@ const Shedule = ({ navigation, route }: any) => {
 
   return (
     <React.Fragment>
-      <CustomStatusBar background="#FFFFFF" mode="dark" noHeight/>
+      <CustomStatusBar background="#FFFFFF" mode="dark" noHeight />
       <ScrollView>
         <View style={styles.container}>
           <View style={styles.row}>

@@ -108,7 +108,6 @@ const ForgotPass = ({ navigation }: any) => {
         </ScrollView>
       </View>
     </React.Fragment>
-
   );
 }
 

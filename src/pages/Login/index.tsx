@@ -1,7 +1,6 @@
-import React, { useCallback, useState } from 'react';
-import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Image, TextInput, ScrollView, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useFocusEffect } from '@react-navigation/native';
 
 import axios from 'axios';
 import { baseURL } from '../../services/api';
@@ -9,21 +8,13 @@ import { baseURL } from '../../services/api';
 import { useAuth } from '../../contexts/auth';
 import { useDropDown } from '../../contexts/dropDown';
 import CustomStatusBar from '../../components/CustomStatusBar';
-import { ScrollView } from 'react-native-gesture-handler';
 
 const Login = ({ navigation }: any) => {
   const { signIn } = useAuth();
-
   const { ref } = useDropDown();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
-  useFocusEffect(
-    useCallback(() => {
-      ref.current.alertWithType("success", "Log in successfull.", "asdasd");
-    }, [])
-  );
 
   const handleForgotPass = () => {
     navigation.navigate('ForgotPass');
@@ -37,8 +28,20 @@ const Login = ({ navigation }: any) => {
       }).then(async res => {
         await signIn(res.data);
       }).catch(err => {
-        //console.log(err)
+        const msg =
+          err.response &&
+            err.response.data ?
+            err.response.data
+            :
+            undefined;
+        ref
+          .current
+          .alertWithType('error', "Erro!", msg.errors);
       })
+    } else {
+      ref
+        .current
+        .alertWithType('error', "Erro!", 'email ou senha vazios!');
     }
   }
 
@@ -98,7 +101,7 @@ const Login = ({ navigation }: any) => {
               />
             </View>
 
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={handleForgotPass}
               style={styles.forgotPasswordContainer}
             >

@@ -13,6 +13,8 @@ import 'moment/locale/pt-br';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
+import { useDropDown } from '../../contexts/dropDown';
+
 import { CapitalizeFirstLetter } from '../../utils/strings';
 
 import api from '../../services/api';
@@ -22,6 +24,7 @@ moment.locale('pt-br');
 
 const NewPatient = ({ navigation }: any) => {
   const { showActionSheetWithOptions } = useActionSheet();
+  const { ref } = useDropDown();
 
   const sexoOptions = [
     'homem', 'mulher', 'nao definido', 'cancelar'
@@ -146,7 +149,7 @@ const NewPatient = ({ navigation }: any) => {
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
-    }).then(res => {      
+    }).then(res => {
       if (!res.cancelled) {
         setImage(res);
       }
@@ -192,7 +195,7 @@ const NewPatient = ({ navigation }: any) => {
         uri: image.uri,
         type: 'image/jpeg',
       });
-      
+
       const config = {
         headers: {
           'Content-Type': 'multipart/form-data; charset=utf-8;'
@@ -200,9 +203,24 @@ const NewPatient = ({ navigation }: any) => {
       }
 
       const res = await api.post('/user/pacientes/new', auxData, config)
-      .then(res => {
-        navigation.navigate('Shedules');
-      });
+        .then(res => {
+          ref
+            .current
+            .alertWithType("success", "Sucesso!", 'Paciente adionado com sucesso!');
+
+          navigation.navigate('Shedules');
+        })
+        .catch(err => {
+          const msg =
+            err.response &&
+              err.response.data ?
+              err.response.data
+              :
+              undefined;
+          ref
+            .current
+            .alertWithType('error', "Erro!", msg.errors);
+        });
     }
   }
 
@@ -226,7 +244,7 @@ const NewPatient = ({ navigation }: any) => {
       title: 'Selecione o modo de captura',
     }, (index: number) => {
 
-      if (index == 0) 
+      if (index == 0)
         showPicOnCamera();
       else if (index === 1)
         showPicOnGalery();
@@ -273,7 +291,7 @@ const NewPatient = ({ navigation }: any) => {
 
   return (
     <React.Fragment>
-      <CustomStatusBar background="#FFFFFF" mode="dark" />
+      <CustomStatusBar background="#FFFFFF" mode="dark" noHeight />
 
       {show &&
         (Platform.OS === 'ios' ?

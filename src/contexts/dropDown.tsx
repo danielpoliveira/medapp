@@ -1,19 +1,14 @@
 import React, { useRef } from "react";
 import { StyleSheet } from 'react-native';
-import DropdownAlert, { DropdownAlertType } from "react-native-dropdownalert";
+import DropdownAlert from "react-native-dropdownalert";
 
-const DropDownContext =
-  React.createContext<DropdownAlertType>({} as DropdownAlertType);
+const DropDownContext = React.createContext({} as any);
 
 export const DropDownComponentProvider: React.FC = ({ children }) => {
-  let ref = useRef();
+  let ref = useRef(null);
 
   return (
-    <DropDownContext.Provider
-      value={{
-        ref,
-      }}
-    >
+    <DropDownContext.Provider value={{ ref }}>
       {children}
       <DropdownAlert
         defaultContainer={styles.dropDownAlerContainer}

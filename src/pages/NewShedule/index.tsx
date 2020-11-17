@@ -25,9 +25,9 @@ import 'moment/locale/pt-br';
 
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-import { useStatusBarMode } from '../../contexts/statusBarMode';
 import ListSelector from '../../components/ListSelector';
 import api from '../../services/api';
+import CustomStatusBar from '../../components/CustomStatusBar';
 
 moment.locale('pt-br');
 
@@ -61,9 +61,6 @@ const NewShedule = ({ navigation }: any) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      changeStatusBarMode('dark');
-      changeStatusBarBackground('#FFFFFF');
-
       setPatientSelected(undefined);
       setMedicSelected(undefined);
       setDateText(undefined);
@@ -94,11 +91,11 @@ const NewShedule = ({ navigation }: any) => {
   async function handleSavePress() {
     if (save) {
       const datetime = moment(moment(dateText).format('YYYY-MM-DD') + ' ' + moment(timeText).format('HH:mm:ss'))
-
+      
       await api.post('/user/agendamentos/new/', {
         paciente: patientSelected?.id,
         medico: medicSelected?.id,
-        datetime,
+        datetime: moment(datetime).format(),
       }).then(res => {
         navigation.navigate('Shedules');
       });
@@ -161,6 +158,7 @@ const NewShedule = ({ navigation }: any) => {
 
   return (
     <React.Fragment>
+      <CustomStatusBar background="#FFFFFF" mode="dark" />
       <ListSelector
         mode="selector"
         data={patient}

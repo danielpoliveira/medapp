@@ -6,24 +6,15 @@ import { baseURL } from '../../services/api';
 
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { useStatusBarMode } from '../../contexts/statusBarMode';
-import { useFocusEffect } from '@react-navigation/native';
 import { useAuth } from '../../contexts/auth';
+import CustomStatusBar from '../../components/CustomStatusBar';
 
 const SignUp = ({ navigation }: any) => {
-  const { changeStatusBarMode, changeStatusBarBackground } = useStatusBarMode();
   const { signIn } = useAuth();
 
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
-  useFocusEffect(
-    React.useCallback(() => {
-      changeStatusBarMode('light');
-      changeStatusBarBackground('#EF694D');
-    }, [])
-  );
 
   const handleLogin = () => {
     navigation.navigate('Login');
@@ -36,7 +27,6 @@ const SignUp = ({ navigation }: any) => {
         nome,
         password,
       }).then(async res => {
-        //console.log(res.data);
         signIn(res.data);
       }).catch(err => {
         //console.log(err)
@@ -45,86 +35,89 @@ const SignUp = ({ navigation }: any) => {
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.logoContainer}>
-        <Image
-          style={styles.logo}
-          source={{
-            uri: 'https://www.onlinelogomaker.com/blog/wp-content/uploads/2017/07/medical-logo.jpg'
-          }}
-        />
+    <React.Fragment>
+      <CustomStatusBar background="#EF694D" mode="light" />
+      <View style={styles.container}>
+        <View style={styles.logoContainer}>
+          <Image
+            style={styles.logo}
+            source={{
+              uri: 'https://www.onlinelogomaker.com/blog/wp-content/uploads/2017/07/medical-logo.jpg'
+            }}
+          />
+        </View>
+
+        <View style={{
+          paddingHorizontal: 20,
+        }}>
+          <View style={styles.textInputContainer}>
+            <MaterialIcons
+              name="face"
+              size={25}
+              color="#fff"
+              style={styles.icon}
+            />
+            <TextInput
+              value={nome}
+              onChangeText={setNome}
+              style={styles.textinput}
+              placeholder="Nome completo"
+              placeholderTextColor="#ffffffcf"
+            />
+          </View>
+
+          <View style={styles.textInputContainer}>
+            <Ionicons
+              name="md-mail"
+              size={25}
+              color="#fff"
+              style={styles.icon}
+            />
+            <TextInput
+              value={email}
+              onChangeText={setEmail}
+              style={styles.textinput}
+              placeholder="Email"
+              placeholderTextColor="#ffffffcf"
+            />
+          </View>
+
+          <View style={styles.textInputContainer}>
+            <Ionicons
+              name="md-key"
+              size={25}
+              color="#fff"
+              style={styles.icon}
+            />
+            <TextInput
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+              placeholder="Senha"
+              style={styles.textinput}
+              placeholderTextColor="#ffffffcf"
+            />
+          </View>
+
+          <TouchableOpacity
+            onPress={handleSignUp}
+            style={styles.loginButtomContainer}
+          >
+            <Text style={styles.loginButtomText}>Criar Conta</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={handleLogin}
+            style={styles.signUpButtomContainer}>
+            <Text
+              style={styles.signUpButtomText}
+            >Possui uma conta? <Text style={{ fontWeight: 'bold' }}> Conecte-se!</Text>
+            </Text>
+          </TouchableOpacity>
+
+        </View>
       </View>
-
-      <View style={{
-        paddingHorizontal: 20,
-      }}>
-        <View style={styles.textInputContainer}>
-          <MaterialIcons
-            name="face"
-            size={25}
-            color="#fff"
-            style={styles.icon}
-          />
-          <TextInput
-            value={nome}
-            onChangeText={setNome}
-            style={styles.textinput}
-            placeholder="Nome completo"
-            placeholderTextColor="#ffffffcf"
-          />
-        </View>
-
-        <View style={styles.textInputContainer}>
-          <Ionicons
-            name="md-mail"
-            size={25}
-            color="#fff"
-            style={styles.icon}
-          />
-          <TextInput
-            value={email}
-            onChangeText={setEmail}
-            style={styles.textinput}
-            placeholder="Email"
-            placeholderTextColor="#ffffffcf"
-          />
-        </View>
-
-        <View style={styles.textInputContainer}>
-          <Ionicons
-            name="md-key"
-            size={25}
-            color="#fff"
-            style={styles.icon}
-          />
-          <TextInput
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            placeholder="Senha"
-            style={styles.textinput}
-            placeholderTextColor="#ffffffcf"
-          />
-        </View>
-
-        <TouchableOpacity 
-          onPress={handleSignUp}
-          style={styles.loginButtomContainer}
-        >
-          <Text style={styles.loginButtomText}>Criar Conta</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={handleLogin}
-          style={styles.signUpButtomContainer}>
-          <Text
-            style={styles.signUpButtomText}
-          >Possui uma conta? <Text style={{ fontWeight: 'bold' }}> Conecte-se!</Text>
-          </Text>
-        </TouchableOpacity>
-
-      </View>
-    </View>
+    </React.Fragment>
 
   );
 }

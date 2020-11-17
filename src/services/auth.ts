@@ -8,8 +8,20 @@ interface Response {
   };
 }
 
-
+const USER_KEY  = "@medapp:user";
 const TOKEN_KEY = "@medapp:token";
+
+export const isLogged = async () => {
+  const token = await AsyncStorage.getItem(TOKEN_KEY);
+
+  return token;
+}
+
+export const clearToken = async () => {
+  const test = await AsyncStorage.removeItem(TOKEN_KEY);
+
+  return test;
+}
 
 /*export const onSignIn = async (TOKEN: string) => {
   await AsyncStorage.multiSet([
@@ -37,15 +49,3 @@ const TOKEN_KEY = "@medapp:token";
 }
 */
 
-
-export const isLogged = async () => {
-  const token = await AsyncStorage.getItem(TOKEN_KEY);
-
-  return token;
-}
-
-export const clearToken = async () => {
-  const test = await AsyncStorage.removeItem(TOKEN_KEY);
-
-  return test;
-}

@@ -16,6 +16,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { CapitalizeFirstLetter } from '../../utils/strings';
 
 import api from '../../services/api';
+import CustomStatusBar from '../../components/CustomStatusBar';
 
 moment.locale('pt-br');
 
@@ -216,7 +217,6 @@ const NewPatient = ({ navigation }: any) => {
   );
 
   const showPicActionSheet = () => {
-
     const icons = [icon('ios-camera'), icon('md-photos'), icon('md-close')]
 
     showActionSheetWithOptions({
@@ -226,12 +226,10 @@ const NewPatient = ({ navigation }: any) => {
       title: 'Selecione o modo de captura',
     }, (index: number) => {
 
-      if (index == 0) {
+      if (index == 0) 
         showPicOnCamera();
-      } else if (index === 1) {
+      else if (index === 1)
         showPicOnGalery();
-      }
-
     });
   }
 
@@ -275,6 +273,8 @@ const NewPatient = ({ navigation }: any) => {
 
   return (
     <React.Fragment>
+      <CustomStatusBar background="#FFFFFF" mode="dark" />
+
       {show &&
         (Platform.OS === 'ios' ?
           (<Modal visible={true} transparent animationType={'fade'}>

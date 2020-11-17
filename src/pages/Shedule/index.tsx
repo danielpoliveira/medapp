@@ -13,7 +13,6 @@ import {
 } from 'react-native';
 
 import { useActionSheet } from '@expo/react-native-action-sheet'
-import { useFocusEffect } from '@react-navigation/native';
 import { HeaderBackButton } from '@react-navigation/stack';
 import { Ionicons, Fontisto } from '@expo/vector-icons';
 
@@ -22,6 +21,7 @@ moment.locale('pt-br');
 
 import { useStatusBarMode } from '../../contexts/statusBarMode';
 import api from '../../services/api';
+import CustomStatusBar from '../../components/CustomStatusBar';
 
 const Shedule = ({ navigation, route }: any) => {
   const { changeStatusBarMode, changeStatusBarBackground } = useStatusBarMode();
@@ -41,13 +41,6 @@ const Shedule = ({ navigation, route }: any) => {
       headerRight: () => <HeaderRightButtom />,
     });
   }, [navigation, edited]);
-
-  useFocusEffect(
-    React.useCallback(() => {
-      changeStatusBarMode('dark');
-      changeStatusBarBackground('#FFFFFF');
-    }, [])
-  );
 
   const handlePatientPress = () => {
     navigation.navigate('Patient', {
@@ -104,6 +97,7 @@ const Shedule = ({ navigation, route }: any) => {
 
   return (
     <React.Fragment>
+      <CustomStatusBar background="#FFFFFF" mode="dark" />
       <ScrollView>
         <View style={styles.container}>
           <View style={styles.row}>

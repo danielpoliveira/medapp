@@ -1,16 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { Text, View, FlatList, StyleSheet, TextInput, } from "react-native";
+import React, { useCallback, useState } from 'react';
+import { Text, View,  StyleSheet, TouchableOpacity} from "react-native";
 import { Octicons } from '@expo/vector-icons';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useFocusEffect } from '@react-navigation/native';
 
-import { useStatusBarMode } from '../../contexts/statusBarMode';
 import ListSelector from '../../components/ListSelector';
 
 import api from '../../services/api';
+import CustomStatusBar from '../../components/CustomStatusBar';
 
 const Patients = ({ navigation }: any) => {
-  const { changeStatusBarMode, changeStatusBarBackground } = useStatusBarMode();
   const [data, setData] = useState([]);
 
   async function loadPatients() {
@@ -20,20 +18,14 @@ const Patients = ({ navigation }: any) => {
   }
 
   useFocusEffect(
-    React.useCallback(() => {
-      changeStatusBarMode('dark');
-      changeStatusBarBackground('#FFFFFF');
-
+    useCallback(() => {
       loadPatients();
     }, [])
   );
 
-  useEffect(() => {
-
-  }, []);
-
   return (
     <React.Fragment>
+      <CustomStatusBar background="#FFFFFF" mode="dark" />
       <View style={styles.container}>
         <ListSelector mode="page" data={data} navigation={navigation} />
       </View>
@@ -47,10 +39,8 @@ const Patients = ({ navigation }: any) => {
           <Text style={{ fontSize: 20, color: '#FFFFFF', marginLeft: 10 }}>Novo paciente</Text>
         </TouchableOpacity>
       </View>
-
-
     </React.Fragment>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -97,9 +87,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
 
-  search: {
-
-  }
+  search: {},
 });
 
 export default Patients;

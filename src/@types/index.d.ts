@@ -3,6 +3,8 @@ declare module "*.jpg" {
   export default content;
 }
 
+type Mode = 'light' | 'dark';
+
 declare module "*.png" {
   const content: string;
   export default content;

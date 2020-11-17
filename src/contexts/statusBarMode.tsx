@@ -1,7 +1,5 @@
 import React, { createContext, useContext, useState } from 'react';
 
-type Mode = 'light' | 'dark';
-
 interface StatusBarModeData {
   mode: Mode;
   background: string;

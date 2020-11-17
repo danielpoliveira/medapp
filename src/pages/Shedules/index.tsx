@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View, Text, FlatList, TouchableOpacity, } from "react-native";
 import CalendarStrip from 'react-native-calendar-strip';
 
 import api from '../../services/api';
 
 import { useFocusEffect } from '@react-navigation/native';
-import { useStatusBarMode } from '../../contexts/statusBarMode';
 
 import moment from 'moment';
 import 'moment/locale/pt-br';
@@ -15,6 +14,7 @@ import { Colors } from '../../components/Accordion/Colors';
 import CheckIcon from '../../components/CheckIcon';
 import Loader from '../../components/Loader';
 import EmptyDateComponent from '../../components/EmptyDateComponent';
+import CustomStatusBar from '../../components/CustomStatusBar';
 
 moment.locale();
 
@@ -36,7 +36,7 @@ const RenderItem = ({ item, index, navigation }: any) => {
         })}
       >
         <View style={styles.childRow}>
-          <Text style={[styles.itemInActive, { marginRight: 10 }]}>{moment(item.datetime).format('HH:MM A')}</Text>
+          <Text style={[styles.itemInActive, { marginRight: 10 }]}>{moment(item.datetime).format('HH:mm A')}</Text>
           <Text style={[styles.itemInActive]}>{patient.nome}</Text>
         </View>
 
@@ -48,12 +48,11 @@ const RenderItem = ({ item, index, navigation }: any) => {
 }
 
 const Shedules = ({ navigation, route }: any) => {
-  const { changeStatusBarMode, changeStatusBarBackground } = useStatusBarMode();
   const { date: _date } = route.params ?? { date: null }
 
   const [dataUsers, setDataUsers] = useState([]);
   const [date, setDate] = useState(_date || moment());
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const handleDatePress = (date: Date | any) => {
     setLoading(true);
@@ -74,14 +73,15 @@ const Shedules = ({ navigation, route }: any) => {
       setDataUsers(res.data);
 
       setLoading(false);
+    }).catch(err => {
+      const msg = err.response && err.response.data ? err.response.data : undefined;
+
+      console.log(msg.error);
     });
   }
-
+  
   useFocusEffect(
     React.useCallback(() => {
-      changeStatusBarMode('light');
-      changeStatusBarBackground('#EF694D');
-
       loadData();
     }, [date])
   );
@@ -98,9 +98,9 @@ const Shedules = ({ navigation, route }: any) => {
     }],
   }];
 
-
   return (
     <React.Fragment>
+      <CustomStatusBar background="#EF694D" mode="light" />
       <Loader loading={loading} />
       <View style={styles.container}>
         <CalendarStrip

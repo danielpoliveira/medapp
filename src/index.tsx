@@ -4,32 +4,30 @@ import Routes from './routes';
 
 import { ActionSheetProvider, connectActionSheet } from '@expo/react-native-action-sheet'
 
-import { StatusBarModeProvider } from './contexts/statusBarMode';
+import { DropDownComponentProvider } from '../src/contexts/dropDown';
 import { AuthProvider } from './contexts/auth';
-
-import CustomStatusBar from './components/CustomStatusBar';
 
 LogBox.ignoreAllLogs();
 
-const ConnectedApp = connectActionSheet<{}>(
-  () =>
-    <>
-      <CustomStatusBar />
-      <Routes />
-    </>
-);
+const AppContent = () => {
+  return (
+    <Routes />
+  );
+}
+
+const ConnectedApp = connectActionSheet<{}>(AppContent);
 
 const App = () => {
   return (
-    <AuthProvider>
-      <StatusBarModeProvider>
+    <DropDownComponentProvider>
+      <AuthProvider>
         <ActionSheetProvider>
 
           <ConnectedApp />
 
         </ActionSheetProvider>
-      </StatusBarModeProvider>
-    </AuthProvider>
+      </AuthProvider>
+    </DropDownComponentProvider>
   );
 }
 

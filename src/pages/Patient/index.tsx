@@ -1,19 +1,17 @@
 import React, { useLayoutEffect } from 'react';
-import { Text, View, StyleSheet, Image, FlatList, ScrollView, TouchableOpacity, ImageProps, Alert, Linking } from "react-native";
+import { Text, View, StyleSheet, Image, ScrollView, TouchableOpacity } from "react-native";
+
 import { HeaderBackButton } from '@react-navigation/stack';
 import { AntDesign } from '@expo/vector-icons';
-import { useStatusBarMode } from '../../contexts/statusBarMode';
-import { useFocusEffect } from '@react-navigation/native';
-
 import { baseURL } from '../../services/api';
 
 import moment from 'moment';
 import 'moment/locale/pt-br';
+import CustomStatusBar from '../../components/CustomStatusBar';
+
 moment.locale('pt-br');
 
 const Patient = ({ navigation, route }: any) => {
-  const { changeStatusBarMode, changeStatusBarBackground, } = useStatusBarMode();
-
   const { patient } = route.params;
 
   useLayoutEffect(() => {
@@ -23,14 +21,8 @@ const Patient = ({ navigation, route }: any) => {
     });
   }, [navigation]);
 
-  useFocusEffect(
-    React.useCallback(() => {
-      changeStatusBarMode('dark');
-      changeStatusBarBackground('#FFFFFF');
-    }, [])
-  );
 
-  const handlerPrintPress = async () => {}
+  const handlerPrintPress = async () => { }
 
   const HeaderRightButtom = () => (
     <TouchableOpacity onPress={handlerPrintPress} style={styles.printContainer}>
@@ -39,82 +31,87 @@ const Patient = ({ navigation, route }: any) => {
   );
 
   return (
-    <View style={styles.container}>
-      <View style={styles.PerfilContainer}>
-        <Image
-          source={{
-            uri: `${baseURL}/images/get/${patient.avatar_uri}`
-          }}
-          style={styles.avatar}
-        />
-        <View style={styles.PerfilContainerText}>
-          <Text style={styles.Name}>{patient.nome}</Text>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text>{moment().diff(patient.data_nascimento, 'years')} anos</Text>
-            <Text style={{ paddingHorizontal: 3.5, fontSize: 16, }}>•</Text>
-            <Text style={{ textTransform: 'capitalize' }}>{patient.sexo}</Text>
+    <React.Fragment>
+      <CustomStatusBar background="#FFFFFF" mode="dark" />
+
+      <View style={styles.container}>
+        <View style={styles.PerfilContainer}>
+          <Image
+            source={{
+              uri: `${baseURL}/images/get/${patient.avatar_uri}`
+            }}
+            style={styles.avatar}
+          />
+          <View style={styles.PerfilContainerText}>
+            <Text style={styles.Name}>{patient.nome}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text>{moment().diff(patient.data_nascimento, 'years')} anos</Text>
+              <Text style={{ paddingHorizontal: 3.5, fontSize: 16, }}>•</Text>
+              <Text style={{ textTransform: 'capitalize' }}>{patient.sexo}</Text>
+            </View>
           </View>
         </View>
-      </View>
 
-      <ScrollView style={styles.Info}>
-        <Text style={{ padding: 15, fontWeight: 'bold' }}>Informações Principais</Text>
-        <View style={styles.InfoTextView}>
-          <Text>Data de Nascimento  </Text>
-          <Text>{moment(patient.data_nascimento).format('DD/MM/YYYY')}</Text>
-        </View>
-        <View style={styles.line} />
-        <View style={styles.InfoTextView}>
-          <Text>Estado Civil  </Text>
-          <Text style={{ textTransform: 'capitalize' }}>{patient.estado_civil}</Text>
-        </View>
-        <View style={styles.line} />
+        <ScrollView style={styles.Info}>
+          <Text style={{ padding: 15, fontWeight: 'bold' }}>Informações Principais</Text>
+          <View style={styles.InfoTextView}>
+            <Text>Data de Nascimento  </Text>
+            <Text>{moment(patient.data_nascimento).format('DD/MM/YYYY')}</Text>
+          </View>
+          <View style={styles.line} />
+          <View style={styles.InfoTextView}>
+            <Text>Estado Civil  </Text>
+            <Text style={{ textTransform: 'capitalize' }}>{patient.estado_civil}</Text>
+          </View>
+          <View style={styles.line} />
 
-        <View style={styles.InfoTextView}>
-          <Text>Naturalidade</Text>
-          <Text>{patient.naturalidade}</Text>
-        </View>
-        <View style={styles.line} />
+          <View style={styles.InfoTextView}>
+            <Text>Naturalidade</Text>
+            <Text>{patient.naturalidade}</Text>
+          </View>
+          <View style={styles.line} />
 
-        <View style={styles.InfoTextView}>
-          <Text>CPF</Text>
-          <Text>{patient.cpf}</Text>
-        </View>
-        <View style={styles.line} />
+          <View style={styles.InfoTextView}>
+            <Text>CPF</Text>
+            <Text>{patient.cpf}</Text>
+          </View>
+          <View style={styles.line} />
 
-        <View style={styles.InfoTextView}>
-          <Text>RG</Text>
-          <Text>{patient.rg}</Text>
-        </View>
-        <View style={styles.line} />
+          <View style={styles.InfoTextView}>
+            <Text>RG</Text>
+            <Text>{patient.rg}</Text>
+          </View>
+          <View style={styles.line} />
 
-        <View style={styles.InfoTextView}>
-          <Text>Tipo Sanguineo</Text>
-          <Text>{patient.tipo_sanguineo}</Text>
-        </View>
-        <View style={styles.line} />
+          <View style={styles.InfoTextView}>
+            <Text>Tipo Sanguineo</Text>
+            <Text>{patient.tipo_sanguineo}</Text>
+          </View>
+          <View style={styles.line} />
 
-        <Text style={{ padding: 15, fontWeight: 'bold' }}>Plano de Saúde</Text>
+          <Text style={{ padding: 15, fontWeight: 'bold' }}>Plano de Saúde</Text>
 
-        <View style={styles.InfoTextView}>
-          <Text>Convenio</Text>
-          <Text>{patient.convenio}</Text>
-        </View>
-        <View style={styles.line} />
+          <View style={styles.InfoTextView}>
+            <Text>Convenio</Text>
+            <Text>{patient.convenio}</Text>
+          </View>
+          <View style={styles.line} />
 
-        <View style={styles.InfoTextView}>
-          <Text>Plano</Text>
-          <Text>{patient.plano}</Text>
-        </View>
-        <View style={styles.line} />
+          <View style={styles.InfoTextView}>
+            <Text>Plano</Text>
+            <Text>{patient.plano}</Text>
+          </View>
+          <View style={styles.line} />
 
-        <View style={styles.InfoTextView}>
-          <Text>Matricula (id)</Text>
-          <Text>{patient.id}</Text>
-        </View>
-        <View style={styles.line} />
-      </ScrollView>
-    </View >
+          <View style={styles.InfoTextView}>
+            <Text>Matricula (id)</Text>
+            <Text>{patient.id}</Text>
+          </View>
+          <View style={styles.line} />
+        </ScrollView>
+      </View >
+
+    </React.Fragment>
   )
 }
 

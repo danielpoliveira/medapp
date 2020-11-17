@@ -1,7 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
 
-import * as auth from '../services/auth';
 import api from '../services/api';
 
 interface User {
@@ -45,18 +44,17 @@ export const AuthProvider: React.FC = ({ children }) => {
     }
 
     loadStorageData();
-    //signOut();
   }, []);
 
-  async function signIn(res: ResponseProp) {
-    console.log('valor de res --->', res);
-
-    setUser(res.user);
-
+  async function signIn(res: ResponseProp) {    
     api.defaults.headers.Authorization = `Bearer ${res.token}`;
 
-    await AsyncStorage.setItem('@medapp:user', JSON.stringify(res.user));
-    await AsyncStorage.setItem('@medapp:token', res.token);
+    await AsyncStorage.multiSet([
+      ['@medapp:user', JSON.stringify(res.user)],
+      ['@medapp:token', res.token]
+    ]);
+
+    setUser(res.user);
   }
 
   async function signOut() {

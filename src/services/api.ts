@@ -14,6 +14,7 @@ const api = axios.create({
         if (data) {
           config.headers.Authorization = `Bearer ${data}`;
         }
+
         return Promise.resolve(config);
       })
       .catch(err => {

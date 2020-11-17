@@ -1,38 +1,28 @@
 import React from 'react';
 import { Text, View, TouchableOpacity, StyleSheet } from "react-native";
-import { useFocusEffect } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
-
-import { useStatusBarMode } from '../../contexts/statusBarMode';
 import { useAuth } from '../../contexts/auth';
-
+import CustomStatusBar from '../../components/CustomStatusBar';
 
 const Options = () => {
-  const { changeStatusBarMode, changeStatusBarBackground, } = useStatusBarMode();
   const { signOut } = useAuth();
 
-  useFocusEffect(
-    React.useCallback(() => {
-      changeStatusBarMode('dark');
-      changeStatusBarBackground('#FFFFFF');
-    }, [])
-  );
-
-  const handleSignOut = () => {
-    signOut();
-  }
+  const handleSignOut = () => signOut();
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={handleSignOut}
-      >
-        <Feather name="log-out" size={22.5} color="#FFF" />
-        <Text style={styles.text}>Sair do app</Text>
-      </TouchableOpacity>
-    </View>
-  )
+    <React.Fragment>
+      <CustomStatusBar background="#FFFFFF" mode="dark" />
+      <View style={styles.container}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleSignOut}
+        >
+          <Feather name="log-out" size={22.5} color="#FFF" />
+          <Text style={styles.text}>Sair do app</Text>
+        </TouchableOpacity>
+      </View>
+    </React.Fragment>
+  );
 }
 
 const styles = StyleSheet.create({

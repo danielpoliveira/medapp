@@ -1,38 +1,37 @@
 import React, { useCallback, useState } from 'react';
-import { View, Text, StyleSheet, Image, TextInput, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
 
 import axios from 'axios';
 import { baseURL } from '../../services/api';
 
-import { Ionicons } from '@expo/vector-icons';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { useFocusEffect } from '@react-navigation/native';
-
-import { useStatusBarMode } from '../../contexts/statusBarMode';
 import { useAuth } from '../../contexts/auth';
+import { useStatusBarMode } from '../../contexts/statusBarMode';
+import { useDropDown } from '../../contexts/dropDown';
+import CustomStatusBar from '../../components/CustomStatusBar';
 
 const Login = ({ navigation }: any) => {
-  const { changeStatusBarMode, changeStatusBarBackground } = useStatusBarMode();
   const { signIn } = useAuth();
+
+  const { ref } = useDropDown();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   useFocusEffect(
     useCallback(() => {
-      changeStatusBarMode('light');
-      changeStatusBarBackground('#EF694D');
+      ref.current.alertWithType("success", "Log in successfull.", "asdasd");
     }, [])
   );
 
   const handleLogin = async () => {
     if (email && password) {
-      const res = axios.post(`${baseURL}/auth/login`, {
+      const res = await axios.post(`${baseURL}/auth/login`, {
         email,
         password,
       }).then(async res => {
-        //console.log(res.data);
-        signIn(res.data);
+        await signIn(res.data);
       }).catch(err => {
         //console.log(err)
       })
@@ -44,75 +43,78 @@ const Login = ({ navigation }: any) => {
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.logoContainer}>
-        <Image
-          style={styles.logo}
-          source={{
-            uri: 'https://www.onlinelogomaker.com/blog/wp-content/uploads/2017/07/medical-logo.jpg'
-          }}
-        />
-      </View>
+    <>
+      <CustomStatusBar background="#EF694D" mode="light" />
+      <View style={styles.container}>
 
-      <View style={{
-        paddingHorizontal: 20,
-      }}>
-        <View style={styles.textInputContainer}>
-          <Ionicons
-            name="md-mail"
-            size={25}
-            color="#fff"
-          />
-          <TextInput
-            value={email}
-            onChangeText={setEmail}
-
-            style={styles.textinput}
-            placeholder="Email"
-            placeholderTextColor="#ffffffcf"
+        <View style={styles.logoContainer}>
+          <Image
+            style={styles.logo}
+            source={{
+              uri: 'https://www.onlinelogomaker.com/blog/wp-content/uploads/2017/07/medical-logo.jpg'
+            }}
           />
         </View>
 
-        <View style={styles.textInputContainer}>
-          <Ionicons
-            name="md-key"
-            size={25}
-            color="#fff"
-          />
-          <TextInput
-            value={password}
-            onChangeText={setPassword}
+        <View style={{
+          paddingHorizontal: 20,
+        }}>
+          <View style={styles.textInputContainer}>
+            <Ionicons
+              name="md-mail"
+              size={25}
+              color="#fff"
+            />
+            <TextInput
+              value={email}
+              onChangeText={setEmail}
 
-            secureTextEntry
+              style={styles.textinput}
+              placeholder="Email"
+              placeholderTextColor="#ffffffcf"
+            />
+          </View>
 
-            placeholder="Senha"
-            style={styles.textinput}
-            placeholderTextColor="#ffffffcf"
-          />
+          <View style={styles.textInputContainer}>
+            <Ionicons
+              name="md-key"
+              size={25}
+              color="#fff"
+            />
+            <TextInput
+              value={password}
+              onChangeText={setPassword}
+
+              secureTextEntry
+
+              placeholder="Senha"
+              style={styles.textinput}
+              placeholderTextColor="#ffffffcf"
+            />
+          </View>
+
+          <TouchableOpacity style={styles.forgotPasswordContainer}>
+            <Text style={styles.forgotPasswordText}>Esqueceu sua senha?</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={handleLogin}
+            style={styles.loginButtomContainer}
+          >
+            <Text style={styles.loginButtomText}>Entrar</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={handleSignup}
+            style={styles.signUpButtomContainer}>
+            <Text
+              style={styles.signUpButtomText}
+            >Não tem uma conta? <Text style={{ fontWeight: 'bold' }}> Cadastre-se!</Text>
+            </Text>
+          </TouchableOpacity>
         </View>
-
-        <TouchableOpacity style={styles.forgotPasswordContainer}>
-          <Text style={styles.forgotPasswordText}>Esqueceu sua senha?</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={handleLogin}
-          style={styles.loginButtomContainer}
-        >
-          <Text style={styles.loginButtomText}>Entrar</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={handleSignup}
-          style={styles.signUpButtomContainer}>
-          <Text
-            style={styles.signUpButtomText}
-          >Não tem uma conta? <Text style={{ fontWeight: 'bold' }}> Cadastre-se!</Text>
-          </Text>
-        </TouchableOpacity>
       </View>
-    </View>
-
+    </>
   );
 }
 
